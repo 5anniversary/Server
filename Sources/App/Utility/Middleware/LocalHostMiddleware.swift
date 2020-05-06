@@ -1,14 +1,6 @@
-//
-//  LocalHostMiddleware.swift
-//  App
-//
-//  Created by Jinxiansen on 2018/7/5.
-//
-
 import Foundation
 import Vapor
 
-//以下 uris 中包含的 api，只允许本地访问。
 public final class LocalHostMiddleware: Middleware,Service {
     
     public func respond(to request: Request, chainingTo next: Responder) throws -> EventLoopFuture<Response> {
@@ -53,13 +45,3 @@ extension LocalHostMiddleware {
     }
     
 }
-
-
-
-
-
-
-
-
-
-

@@ -14,7 +14,6 @@ import FluentMySQL
 
 extension QueryBuilder {
     
-    //客户端传 page 从 1 开始，服务端 -1 从 0 处理。
     public func query(page: Int) -> Self {
         
         let aPage = page < 1 ? 1 : page
