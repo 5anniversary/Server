@@ -228,25 +228,10 @@ extension UserController {
             return futureFirst.flatMap({ (existInfo) in
                     
                 var imgName: String?
-                if let file = container.picImage { //如果上传了图片，就判断下大小，否则就揭过这一茬。
-                    guard file.data.count < ImageMaxByteSize else {
-                        return try ResponseJSON<Empty>(status: .pictureTooBig).encode(for: req)
-                    }
-                    imgName = try VaporUtils.imageName()
-                    let path = try VaporUtils.localRootDir(at: ImagePath.userPic, req: req) + "/" + imgName!
-                    
-                    try Data(file.data).write(to: URL(fileURLWithPath: path))
-                }
                 
                 let userInfo: UserInfo?
-                if var existInfo = existInfo { //存在则更新。
+                if var existInfo = existInfo {
                     userInfo = existInfo.update(with: container)
-                    
-                    if let existPicName = existInfo.picLink,let imgName = imgName { //移除原来的照片
-                        let path = try VaporUtils.localRootDir(at: ImagePath.userPic, req: req) + "/" + existPicName
-                        try FileManager.default.removeItem(at: URL.init(fileURLWithPath: path))
-//                        userInfo?.picName = imgName
-                    }
                     
                 }else {
                     userInfo = UserInfo(id: nil,
@@ -256,7 +241,7 @@ extension UserController {
                                         nickName: container.nickName,
                                         phone: container.phone,
                                         location: container.location,
-                                        picLink: imgName)
+                                        picLink: container.picImage)
                 }
                 
                 return (userInfo!.save(on: req).flatMap({ (info) in
@@ -303,6 +288,6 @@ struct UserInfoContainer: Content {
     var phone: String?
     var birthday: String?
     var location: String?
-    var picImage: File?
+    var picImage: String?
     
 }
