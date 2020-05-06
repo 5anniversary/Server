@@ -14,10 +14,10 @@ import FluentMySQL
 
 struct ImagePath {
     
-    static let record = "record" //动态
-    static let report = "report" // 举报
-    static let userPic = "userPic" // 用户头像
-    static let note = "note" // 
+    static let record = "record"
+    static let report = "report"
+    static let userPic = "userPic"
+    static let note = "note" 
 }
 
 public let pageCount = 20

@@ -40,7 +40,7 @@ private extension User {
 
 extension UserController {
     
-    //MARK: 登录
+
     func loginUserHandler(_ req: Request,user: User) throws -> Future<Response> {
         
         let futureFirst = User.query(on: req).filter(\.account == user.account).first()
@@ -71,7 +71,7 @@ extension UserController {
         })
     }
     
-    //MARK: 注册
+    
     func registerUserHandler(_ req: Request, newUser: User) throws -> Future<Response> {
         
         let futureFirst = User.query(on: req).filter(\.account == newUser.account).first()
@@ -137,7 +137,7 @@ extension UserController {
         })
     }
     
-    //MARK: 修改密码
+
     private func changePasswordHandler(_ req: Request,inputContent: PasswordContainer) throws -> Future<Response> {
         
         return User.query(on: req).filter(\.account == inputContent.account).first().flatMap({ (existUser) in
@@ -212,7 +212,7 @@ extension UserController {
         return try req.streamFile(at: path)
     }
     
-    //MARK: 更新用户信息
+
     func updateUserInfoHandler(_ req: Request,container: UserInfoContainer) throws -> Future<Response> {
         
         let bearToken = BearerAuthorization(token: container.token)
@@ -306,13 +306,3 @@ struct UserInfoContainer: Content {
     var picImage: File?
     
 }
-
-
-
-
-
-
-
-
-
-

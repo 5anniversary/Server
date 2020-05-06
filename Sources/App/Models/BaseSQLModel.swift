@@ -5,7 +5,6 @@ import Authentication
 
 public typealias BaseSQLModel = MySQLModel & Migration & Content
 
-//声明协议
 protocol SuperModel: BaseSQLModel {
 
     static var entity: String { get }
@@ -19,7 +18,6 @@ protocol SuperModel: BaseSQLModel {
     var deletedAt: Date? { get set }
 }
 
-//默认实现
 extension SuperModel {
     
     var deletedAt: Date? { return nil }
@@ -31,7 +29,6 @@ extension SuperModel {
     static var deletedAtKey: TimestampKey? { return \Self.deletedAt }
 }
 
-//遵守协议
 struct MyModel: SuperModel {
     
     var id: Int?

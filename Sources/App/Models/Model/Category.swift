@@ -1,7 +1,7 @@
 import Vapor
 import FluentMySQL
 
-final class Category: Codable {
+final class Category: BaseSQLModel {
     var id: Int?
     var name: String
     
@@ -11,9 +11,7 @@ final class Category: Codable {
     }
 }
 
-extension Category: Content {}
-extension Category: Migration {}
 extension Category: Parameter {}
-extension Category: MySQLModel {
+extension Category {
     typealias Database = MySQLDatabase
 }

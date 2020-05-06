@@ -10,5 +10,7 @@ extension MigrationConfig {
         add(model: AccessToken.self, database: .mysql)
         add(model: RefreshToken.self, database: .mysql)
         add(model: UserInfo.self, database: .mysql)
+        add(model: Category.self, database: .mysql)
+
     }
 }

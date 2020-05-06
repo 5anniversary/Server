@@ -1,11 +1,3 @@
-
-//
-//  PageViewMeddleware.swift
-//  App
-//
-//  Created by Jinxiansen on 2018/5/30.
-//
-
 import Vapor
 
 //public final class PageViewMeddleware : Middleware {
