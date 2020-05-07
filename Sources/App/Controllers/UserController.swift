@@ -33,7 +33,7 @@ private extension User {
     func user(with digest: BCryptDigest) throws -> User {
         
         return try User(userID: UUID().uuidString,
-                        account: account,
+                        email: email,
                         password: digest.hash(password))
     }
 }
@@ -43,7 +43,7 @@ extension UserController {
 
     func loginUserHandler(_ req: Request,user: User) throws -> Future<Response> {
         
-        let futureFirst = User.query(on: req).filter(\.account == user.account).first()
+        let futureFirst = User.query(on: req).filter(\.email == user.email).first()
         
         return futureFirst.flatMap({ (existingUser) in
             guard let existingUser = existingUser else {
@@ -74,15 +74,15 @@ extension UserController {
     
     func registerUserHandler(_ req: Request, newUser: User) throws -> Future<Response> {
         
-        let futureFirst = User.query(on: req).filter(\.account == newUser.account).first()
+        let futureFirst = User.query(on: req).filter(\.email == newUser.email).first()
         return futureFirst.flatMap { existingUser in
             guard existingUser == nil else {
                 return try ResponseJSON<Empty>(status: .userExist).encode(for: req)
             }
             
-            if newUser.account.isAccount().0 == false {
+            if newUser.email.isAccount().0 == false {
                 return try ResponseJSON<Empty>(status: .error,
-                                              message: newUser.account.isAccount().1).encode(for: req)
+                                              message: newUser.email.isAccount().1).encode(for: req)
             }
             
             if newUser.password.isPassword().0 == false {
@@ -97,7 +97,7 @@ extension UserController {
                 .flatMap { user in
                 
                 let logger = try req.make(Logger.self)
-                logger.warning("New user created: \(user.account)")
+                logger.warning("New user created: \(user.email)")
                 
                 return try self.authController
                     .authContainer(for: user, on: req)
@@ -140,7 +140,7 @@ extension UserController {
 
     private func changePasswordHandler(_ req: Request,inputContent: PasswordContainer) throws -> Future<Response> {
         
-        return User.query(on: req).filter(\.account == inputContent.account).first().flatMap({ (existUser) in
+        return User.query(on: req).filter(\.email == inputContent.account).first().flatMap({ (existUser) in
             
             guard let existUser = existUser else {
                 return try ResponseJSON<Empty>(status: .userNotExist).encode(for: req)
@@ -164,7 +164,7 @@ extension UserController {
             return user.save(on: req).flatMap { newUser in
                 
                 let logger = try req.make(Logger.self)
-                logger.info("Password Changed Success: \(newUser.account)")
+                logger.info("Password Changed Success: \(newUser.email)")
                 return try ResponseJSON<Empty>(status: .ok,
                                               message: "성공！").encode(for: req)
             }
@@ -226,9 +226,6 @@ extension UserController {
             let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
                 
             return futureFirst.flatMap({ (existInfo) in
-                    
-                var imgName: String?
-                
                 let userInfo: UserInfo?
                 if var existInfo = existInfo {
                     userInfo = existInfo.update(with: container)

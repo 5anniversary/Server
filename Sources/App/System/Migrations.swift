@@ -11,6 +11,7 @@ extension MigrationConfig {
         add(model: RefreshToken.self, database: .mysql)
         add(model: UserInfo.self, database: .mysql)
         add(model: Category.self, database: .mysql)
+        add(model: EmailResult.self, database: .mysql)
 
     }
 }
