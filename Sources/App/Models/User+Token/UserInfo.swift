@@ -37,7 +37,10 @@ extension UserInfo {
         if let new = container.location {
             self.location = new
         }
-        
+        if let new = container.picImage {
+            self.picLink = new
+        }
+
         return self
     }
     

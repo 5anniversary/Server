@@ -33,17 +33,17 @@ private extension User {
     func user(with digest: BCryptDigest) throws -> User {
         
         return try User(userID: UUID().uuidString,
-                        account: account,
+                        email: email,
                         password: digest.hash(password))
     }
 }
 
 extension UserController {
     
-    //MARK: 登录
+
     func loginUserHandler(_ req: Request,user: User) throws -> Future<Response> {
         
-        let futureFirst = User.query(on: req).filter(\.account == user.account).first()
+        let futureFirst = User.query(on: req).filter(\.email == user.email).first()
         
         return futureFirst.flatMap({ (existingUser) in
             guard let existingUser = existingUser else {
@@ -71,18 +71,18 @@ extension UserController {
         })
     }
     
-    //MARK: 注册
+    
     func registerUserHandler(_ req: Request, newUser: User) throws -> Future<Response> {
         
-        let futureFirst = User.query(on: req).filter(\.account == newUser.account).first()
+        let futureFirst = User.query(on: req).filter(\.email == newUser.email).first()
         return futureFirst.flatMap { existingUser in
             guard existingUser == nil else {
                 return try ResponseJSON<Empty>(status: .userExist).encode(for: req)
             }
             
-            if newUser.account.isAccount().0 == false {
+            if newUser.email.isAccount().0 == false {
                 return try ResponseJSON<Empty>(status: .error,
-                                              message: newUser.account.isAccount().1).encode(for: req)
+                                              message: newUser.email.isAccount().1).encode(for: req)
             }
             
             if newUser.password.isPassword().0 == false {
@@ -97,7 +97,7 @@ extension UserController {
                 .flatMap { user in
                 
                 let logger = try req.make(Logger.self)
-                logger.warning("New user created: \(user.account)")
+                logger.warning("New user created: \(user.email)")
                 
                 return try self.authController
                     .authContainer(for: user, on: req)
@@ -137,10 +137,10 @@ extension UserController {
         })
     }
     
-    //MARK: 修改密码
+
     private func changePasswordHandler(_ req: Request,inputContent: PasswordContainer) throws -> Future<Response> {
         
-        return User.query(on: req).filter(\.account == inputContent.account).first().flatMap({ (existUser) in
+        return User.query(on: req).filter(\.email == inputContent.account).first().flatMap({ (existUser) in
             
             guard let existUser = existUser else {
                 return try ResponseJSON<Empty>(status: .userNotExist).encode(for: req)
@@ -164,7 +164,7 @@ extension UserController {
             return user.save(on: req).flatMap { newUser in
                 
                 let logger = try req.make(Logger.self)
-                logger.info("Password Changed Success: \(newUser.account)")
+                logger.info("Password Changed Success: \(newUser.email)")
                 return try ResponseJSON<Empty>(status: .ok,
                                               message: "성공！").encode(for: req)
             }
@@ -212,7 +212,7 @@ extension UserController {
         return try req.streamFile(at: path)
     }
     
-    //MARK: 更新用户信息
+
     func updateUserInfoHandler(_ req: Request,container: UserInfoContainer) throws -> Future<Response> {
         
         let bearToken = BearerAuthorization(token: container.token)
@@ -226,27 +226,9 @@ extension UserController {
             let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
                 
             return futureFirst.flatMap({ (existInfo) in
-                    
-                var imgName: String?
-                if let file = container.picImage { //如果上传了图片，就判断下大小，否则就揭过这一茬。
-                    guard file.data.count < ImageMaxByteSize else {
-                        return try ResponseJSON<Empty>(status: .pictureTooBig).encode(for: req)
-                    }
-                    imgName = try VaporUtils.imageName()
-                    let path = try VaporUtils.localRootDir(at: ImagePath.userPic, req: req) + "/" + imgName!
-                    
-                    try Data(file.data).write(to: URL(fileURLWithPath: path))
-                }
-                
                 let userInfo: UserInfo?
-                if var existInfo = existInfo { //存在则更新。
+                if var existInfo = existInfo {
                     userInfo = existInfo.update(with: container)
-                    
-                    if let existPicName = existInfo.picLink,let imgName = imgName { //移除原来的照片
-                        let path = try VaporUtils.localRootDir(at: ImagePath.userPic, req: req) + "/" + existPicName
-                        try FileManager.default.removeItem(at: URL.init(fileURLWithPath: path))
-//                        userInfo?.picName = imgName
-                    }
                     
                 }else {
                     userInfo = UserInfo(id: nil,
@@ -256,7 +238,7 @@ extension UserController {
                                         nickName: container.nickName,
                                         phone: container.phone,
                                         location: container.location,
-                                        picLink: imgName)
+                                        picLink: container.picImage)
                 }
                 
                 return (userInfo!.save(on: req).flatMap({ (info) in
@@ -303,16 +285,6 @@ struct UserInfoContainer: Content {
     var phone: String?
     var birthday: String?
     var location: String?
-    var picImage: File?
+    var picImage: String?
     
 }
-
-
-
-
-
-
-
-
-
-

@@ -4,7 +4,7 @@ import Vapor
 public func routes(_ router: Router) throws {
     // Basic "It works" example
     router.get { req in
-        return "It works!"
+        return "study together 서버 입니당."
     }
     
     // Basic "Hello, world!" example
@@ -18,5 +18,8 @@ public func routes(_ router: Router) throws {
     
     // Example of configuring a controller
     try router.register(collection: UserController())
+    try router.register(collection: EmailController())
+    try router.register(collection: CategoryController())
+    try router.register(collection: StudyController())
     try router.register(collection: AuthenRouteController())
 }

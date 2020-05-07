@@ -51,9 +51,9 @@ public func configure(_ config: inout Config,
     
     let port: Int
     if let environmentPort = Environment.get("PORT") {
-        port = Int(environmentPort) ?? 9090
+        port = Int(environmentPort) ?? 9092
     } else {
-        port = 9090
+        port = 9092
     }
     let nioServerConfig = NIOServerConfig.default(port: port)
     services.register(nioServerConfig)

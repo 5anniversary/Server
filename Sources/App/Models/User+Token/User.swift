@@ -8,12 +8,12 @@ struct User: BaseSQLModel {
     
     static var entity: String { return self.name + "s" }
     
-    private(set) var account: String
+    private(set) var email: String
     var password: String
  
-    init(userID: String,account: String,password: String) {
+    init(userID: String,email: String,password: String) {
         self.userID = userID
-        self.account = account
+        self.email = email
         self.password = password
     }
    
@@ -26,7 +26,7 @@ struct User: BaseSQLModel {
 }
 
 extension User: BasicAuthenticatable {
-    static var usernameKey: WritableKeyPath<User, String> = \.account
+    static var usernameKey: WritableKeyPath<User, String> = \.email
     static var passwordKey: WritableKeyPath<User, String> = \.password
 }
 

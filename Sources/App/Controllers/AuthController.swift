@@ -56,7 +56,7 @@ private extension AuthController {
     func existingUser(matching user: User, on connection: DatabaseConnectable) throws -> Future<User?> {
         return User
             .query(on: connection)
-            .filter(\.account == user.account)
+            .filter(\.email == user.email)
             .first()
     }
     

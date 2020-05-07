@@ -1,10 +1,3 @@
-//
-//  String+Extension.swift
-//  App
-//
-//  Created by Jinxiansen on 2018/6/7.
-//
-
 import Foundation
 import Vapor
 import Crypto
@@ -51,7 +44,7 @@ extension String {
     
     var outPutUnit: String {
         #if os(Linux)
-        let s = "%s" // Linux上使用 %@ 输出编译不过，得用 %s 输出C字符串。
+        let s = "%s"
         #else
         let s = "%@"
         #endif

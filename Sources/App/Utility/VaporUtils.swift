@@ -24,7 +24,7 @@ class VaporUtils {
         }
         
         let manager = FileManager.default
-        if !manager.fileExists(atPath: localPath) { //不存在则创建
+        if !manager.fileExists(atPath: localPath) { 
             try manager.createDirectory(atPath: localPath, withIntermediateDirectories: true, attributes: nil)
         }
          

@@ -1,10 +1,3 @@
-//
-//  AuthUserMiddleware.swift
-//  App
-//
-//  Created by Jinxiansen on 2018/6/7.
-//
-
 import Vapor
 
 struct AuthUserMiddleware: Middleware {
