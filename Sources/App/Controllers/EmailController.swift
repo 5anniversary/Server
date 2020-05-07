@@ -25,7 +25,7 @@ extension EmailController {
                                                   message: "전송 한도가 초과되었습니다.").encode(for: req)
                 }
                 return try EmailSender.sendEmail(req, content: content).flatMap({ (state) in
-                    var result = EmailResult.init(id: nil,
+                    let result = EmailResult.init(id: nil,
                                                       state: state,
                                                       email: content.email,
                                                       sendTime: TimeManager.current())

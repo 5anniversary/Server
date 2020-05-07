@@ -9,6 +9,14 @@
 - [x] [modify user info ](API.md/#modifyuserinfo)
 - [x] [logout ](API.md/#logout)
 
+
+
+[Email](API.md/#Email)
+
+- [x] [emailSend](API.md/#emailSend)
+
+
+
 <h2 id="User">User</h2>
 
 > 현재 로그인 Token 유효기간 60 * 60 * 24 * 30 second 
@@ -25,7 +33,7 @@ POST /users/register
 ### Request
 ```json
 {
-	"account":"asdf123",
+	"email":"123123@gmail.com",
 	"password":"123123",
 }
 ```
@@ -59,7 +67,7 @@ POST /users/register
 ### Request
 ```json
 {
-	"account":"asdf123",
+	"email":"123123@gmail.com",
 	"password":"123123",
 }
 ```
@@ -91,7 +99,7 @@ POST /users/changePassword
 ### Request
 ```json
 {
-	"account":"asdf123",
+	"email":"123123@gmail.com",
 	"password":"123123",
     "newPassword":"123123123"
 }
@@ -106,6 +114,51 @@ POST /users/changePassword
     "message": "성공！"
 }
 ```
+
+
+
+
+
+<h2 id="email">email</h2>
+
+
+
+<h3 id="emailSend">emailSend</h3>
+
+> Content-type : application/json
+
+```http
+POST /sendEmail
+```
+
+### Request
+
+```json
+{
+	"email": "123123@gmail.com",
+	"myName" : "StudyTogether",
+	"subject" : "이메일 인증",
+	"text" : "인증번호를 입력해주세요"
+}
+```
+
+### Response
+
+> Success : 200
+
+```json
+{
+    "status": 200,
+    "message": "발신에 성공했습니다.",
+    "data": {
+        "state": true,
+        "email": "123123@gmail.com",
+        "sendTime": "2020-05-07 18:22:11"
+    }
+}
+```
+
+
 
 # 추후 추가 예정
 
