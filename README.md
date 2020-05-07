@@ -12,4 +12,4 @@
 </p>
 
 
-- [API](API.md)
+- [API](https://github.com/SKHU-STUDY/Server/wiki)
