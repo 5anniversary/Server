@@ -224,7 +224,7 @@ extension UserController {
             }
             
             let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
-                
+                dump(container)
             return futureFirst.flatMap({ (existInfo) in
                 let userInfo: UserInfo?
                 if var existInfo = existInfo {
@@ -236,14 +236,14 @@ extension UserController {
                                         age: container.age,
                                         sex: container.sex,
                                         nickName: container.nickName,
-                                        phone: container.phone,
                                         location: container.location,
-                                        picLink: container.picImage)
+                                        picLink: container.picImage,
+                                        userCategory: container.category)
                 }
                 
                 return (userInfo!.save(on: req).flatMap({ (info) in
                     return try ResponseJSON<Empty>(status: .ok,
-                                                   message: "更新成功").encode(for: req)
+                                                   message: "요청 성공").encode(for: req)
                 }))
             })
         })
@@ -255,6 +255,7 @@ extension UserController {
 
 fileprivate struct TokenContainer: Content {
     var token: String
+    
 }
 
 fileprivate struct PasswordContainer: Content {
@@ -282,9 +283,8 @@ struct UserInfoContainer: Content {
     var age: Int?
     var sex: Int?
     var nickName: String?
-    var phone: String?
-    var birthday: String?
     var location: String?
     var picImage: String?
+    var category: [String]?
     
 }

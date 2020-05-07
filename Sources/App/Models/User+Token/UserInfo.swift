@@ -10,13 +10,12 @@ struct UserInfo : BaseSQLModel {
     var age: Int?
     var sex: Int?
     var nickName: String?
-    var phone: String?
     var location: String?
     var picLink: String?
+    var userCategory: [String]?
     
     typealias Database = MySQLDatabase
 }
-
 
 extension UserInfo {
     
@@ -31,16 +30,16 @@ extension UserInfo {
         if let new = container.nickName {
             self.nickName = new
         }
-        if let new = container.phone {
-            self.phone = new
-        }
         if let new = container.location {
             self.location = new
         }
         if let new = container.picImage {
             self.picLink = new
         }
-
+        if let new = container.category {
+            self.userCategory = new
+        }
+        
         return self
     }
     
