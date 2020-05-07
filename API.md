@@ -11,6 +11,12 @@
 
 
 
+[Category](API.md/#category)
+
+- [ ] [getCategory](API.md/#getCategory)
+
+
+
 [Email](API.md/#Email)
 
 - [x] [emailSend](API.md/#emailSend)
@@ -97,6 +103,7 @@ POST /users/changePassword
 ```
 
 ### Request
+
 ```json
 {
 	"email":"123123@gmail.com",
@@ -106,6 +113,7 @@ POST /users/changePassword
 ```
 
 ### Response
+
 > Success : 200
 
 ```
@@ -117,7 +125,144 @@ POST /users/changePassword
 
 
 
+<h3 id="getuserinfo">Get User Info</h3>
 
+> Content-type : application/json
+
+```http
+POST /users/getUserInfo
+```
+
+### Request
+
+```json
+{
+	"token":"WuVNeuz3vbhzx1xJlXTEYE9MCZM6OfGeVC_p_SpJYEA",
+}
+```
+
+### Response
+
+> Success : 200
+
+```json
+{
+    "status": 200,
+    "message": "요청이 성공했습니다.",
+    "data": {
+        "userID": "1F881DAD-0740-4FE1-8800-D876F16894D8",
+        "location": "강남",
+        "id": 1,
+        "age": 25,
+        "picLink": "이미지 링크",
+        "sex": 0,
+        "nickName": "닉네임",
+        "userCategory": [
+            "IT",
+            "Swift",
+            "Vapor"
+        ]
+    }
+}
+```
+
+
+
+<h3 id="modifyuserinfo">Modify User Info</h3>
+
+> Content-type : application/json
+
+```http
+POST /users/updateInfo
+```
+
+### Request
+
+```json
+{
+	"token":"WuVNeuz3vbhzx1xJlXTEYE9MCZM6OfGeVC_p_SpJYEA",
+	"age": 25,
+	"sex": 0,
+	"nickName" : "닉네임",
+	"location": "강남",
+	"picImage": "이미지 링크",
+	"category": ["IT","Swift","Vapor"]
+}
+```
+
+### Response
+
+> Success : 200
+
+```
+{
+    "status": 200,
+    "message": "성공！"
+}
+```
+
+
+
+---
+
+<h2 id="category">Category</h2>
+
+<h3 id="getCategory">get category</h3>
+
+>  Content-type : application/json
+
+```http
+GET /getCategory
+```
+
+### 
+
+### Response
+
+> Success : 200
+
+```json
+{
+    "message": "요청이 성공했습니다.",
+    "data": [
+        {
+            "name": "Swift",
+            "id": 1
+        },
+        {
+            "name": "토익",
+            "id": 2
+        },
+        {
+            "name": "토플",
+            "id": 3
+        },
+        {
+            "name": "JLPT",
+            "id": 4
+        },
+        {
+            "name": "IT",
+            "id": 5
+        },
+        {
+            "name": "운동",
+            "id": 6
+        },
+        {
+            "name": "헬스",
+            "id": 7
+        }
+    ],
+    "status": 200
+}
+```
+
+
+
+
+
+---
 
 <h2 id="email">email</h2>
 
