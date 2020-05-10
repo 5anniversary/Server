@@ -3,7 +3,7 @@ import Vapor
 import FluentMySQL
 import Authentication
 
-public typealias BaseSQLModel = MySQLModel & Migration & Content
+public typealias BaseSQLModel = MySQLModel & Migration & Content & Parameter
 
 protocol SuperModel: BaseSQLModel {
 

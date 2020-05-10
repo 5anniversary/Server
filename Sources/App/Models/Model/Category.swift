@@ -1,7 +1,7 @@
 import Vapor
 import FluentMySQL
 
-final class Category: BaseSQLModel {
+struct Category: BaseSQLModel {
     var id: Int?
     var name: String
     
@@ -11,7 +11,6 @@ final class Category: BaseSQLModel {
     }
 }
 
-extension Category: Parameter {}
 extension Category {
     typealias Database = MySQLDatabase
 }
