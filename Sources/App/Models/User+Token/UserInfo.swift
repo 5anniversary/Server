@@ -13,6 +13,8 @@ struct UserInfo : BaseSQLModel {
     var location: String?
     var picLink: String?
     var userCategory: [String]?
+    var study: Studying?
+    var endStudy: Studying?
     
     typealias Database = MySQLDatabase
 }
