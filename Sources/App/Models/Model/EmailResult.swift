@@ -12,7 +12,6 @@ struct EmailResult: BaseSQLModel {
     
 }
 
-extension EmailResult: Parameter {}
 extension EmailResult {
     typealias Database = MySQLDatabase
 }

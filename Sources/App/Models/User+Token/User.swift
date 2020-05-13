@@ -29,5 +29,3 @@ extension User: BasicAuthenticatable {
     static var usernameKey: WritableKeyPath<User, String> = \.email
     static var passwordKey: WritableKeyPath<User, String> = \.password
 }
-
-extension User: Parameter {}

@@ -176,7 +176,7 @@ extension UserController {
         guard let token = req.query[String.self,
                                     at: "token"] else {
             return try ResponseJSON<Empty>(status: .error,
-                                           message: "缺少 token 参数").encode(for: req)
+                                           message: "토큰이 없습니다").encode(for: req)
         }
         
         let bearToken = BearerAuthorization(token: token)
@@ -193,7 +193,7 @@ extension UserController {
             return futureFirst.flatMap({ (existInfo) in
                 guard let existInfo = existInfo else {
                     return try ResponseJSON<Empty>(status: .error,
-                                                  message: "用户信息为空").encode(for: req)
+                                                  message: "사용자 정보가 없습니다").encode(for: req)
                 }
                 return try ResponseJSON<UserInfo>(data: existInfo).encode(for: req)
             })
@@ -224,13 +224,12 @@ extension UserController {
             }
             
             let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
-                dump(container)
             return futureFirst.flatMap({ (existInfo) in
                 let userInfo: UserInfo?
                 if var existInfo = existInfo {
                     userInfo = existInfo.update(with: container)
                     
-                }else {
+                } else {
                     userInfo = UserInfo(id: nil,
                                         userID: existToken.userID,
                                         age: container.age,
