@@ -51,6 +51,7 @@ extension StudyController {
                 return Study
                     .query(on: req)
                     .filter(\.category == container.category)
+                    .sort(\.id)
                     .all()
                     .flatMap({ (category) in
                         let categorys = category.compactMap({ cate -> Study in
@@ -103,7 +104,7 @@ extension StudyController {
                     
                     if existInfo?.id == container.id {
                         study = existInfo?.update(with: container)
-                        
+
                     } else {
                         study = Study(id: nil,
                                       userID: existToken.userID,
@@ -114,11 +115,10 @@ extension StudyController {
                                       assignmentFine : container.assignmentFine,
                                       location: container.location,
                                       content: container.content,
-                                      chiefUserID: container.chiefUserID,
-                                      category: container.category,
-                                      users: container.users,
-                                      chapter: container.chapter
+                                      category: container.category
                         )
+                        
+                        
                     }
                     
                     return (study!.save(on: req).flatMap({ (info) in
@@ -132,7 +132,6 @@ extension StudyController {
 }
 
 struct StudyInfoContainer: Content {
-    
     var token:String
     
     var id: Int?
