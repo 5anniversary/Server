@@ -236,7 +236,7 @@ extension UserController {
                                         sex: container.sex,
                                         nickName: container.nickName,
                                         location: container.location,
-                                        picLink: container.picImage,
+                                        image: container.image,
                                         userCategory: container.category)
                 }
                 
@@ -283,7 +283,7 @@ struct UserInfoContainer: Content {
     var sex: Int?
     var nickName: String?
     var location: String?
-    var picImage: String?
+    var image: String?
     var category: [String]?
     
 }

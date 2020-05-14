@@ -4,7 +4,7 @@ import FluentMySQL
 struct StudyUser: BaseSQLModel {
     var id: Int?
     var name: String
-    var uid: String
+    var userID: String
     var image: String
 
 }

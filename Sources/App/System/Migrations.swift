@@ -15,5 +15,6 @@ extension MigrationConfig {
         add(model: Study.self, database: .mysql)
         add(model: Chapter.self, database: .mysql)
         add(model: StudyUser.self, database: .mysql)
+        add(model: Fine.self, database: .mysql)
     }
 }

@@ -11,7 +11,7 @@ struct UserInfo : BaseSQLModel {
     var sex: Int?
     var nickName: String?
     var location: String?
-    var picLink: String?
+    var image: String?
     var userCategory: [String]?
     var study: Studying?
     var endStudy: Studying?
@@ -35,8 +35,8 @@ extension UserInfo {
         if let new = container.location {
             self.location = new
         }
-        if let new = container.picImage {
-            self.picLink = new
+        if let new = container.image {
+            self.image = new
         }
         if let new = container.category {
             self.userCategory = new

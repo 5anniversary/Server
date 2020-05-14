@@ -8,14 +8,14 @@ struct Study: BaseSQLModel {
     var content: String
     var image: String
     var location: String
-    var isUserLimit: Int?
+    var userLimit: Int?
     var isFine: Bool
     var isEnd: Bool
     var chapter: [Chapter]?
     var chiefUser: [StudyUser]?
     var studyUser: [StudyUser]?
     var wantUser: [StudyUser]?
-    var fine: [Fine]?
+    var fine: Fine?
 }
 
 extension Study {
