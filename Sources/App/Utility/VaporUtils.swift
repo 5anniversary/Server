@@ -39,7 +39,7 @@ class VaporUtils {
     class func randomString() throws -> String {
         let r = try CryptoRandom().generate(Int.self)
         let d = Date().timeIntervalSince1970.description
-        let fileName = (r.description + d)
+        let fileName = (r.description + d).md5
         return fileName
     }
     

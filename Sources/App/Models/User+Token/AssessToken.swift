@@ -10,7 +10,7 @@ struct AccessToken: BaseSQLModel {
     
     static var entity: String { return "AccessTokens" }
 
-    static let accessTokenExpirationInterval: TimeInterval = 60 * 60 * 24 * 30 // 1个月
+    static let accessTokenExpirationInterval: TimeInterval = 60 * 60 * 24 * 30
     
     var id: Int?
     

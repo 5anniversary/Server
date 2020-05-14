@@ -12,6 +12,9 @@ extension MigrationConfig {
         add(model: UserInfo.self, database: .mysql)
         add(model: Category.self, database: .mysql)
         add(model: EmailResult.self, database: .mysql)
-
+        add(model: Study.self, database: .mysql)
+        add(model: Chapter.self, database: .mysql)
+        add(model: StudyUser.self, database: .mysql)
+        add(model: Fine.self, database: .mysql)
     }
 }

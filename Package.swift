@@ -39,7 +39,9 @@ let package = Package(
         .package(url: "https://github.com/vapor/multipart.git",
                  from: "3.0.0"),
         .package(url: "https://github.com/IBM-Swift/LoggerAPI.git",
-                 .upToNextMinor(from: "1.8.0"))
+                 .upToNextMinor(from: "1.8.0")),
+        .package(url: "https://github.com/vapor-community/pagination.git",
+                 from: "1.0.0")
     ],
     targets: [
         .target(name: "App", dependencies: ["FluentMySQL",
@@ -58,7 +60,9 @@ let package = Package(
                                             "APIErrorMiddleware",
                                             "SwiftSMTP",
                                             "SwiftSoup",
-                                            "LoggerAPI"]),
+                                            "LoggerAPI",
+                                            "Pagination"
+        ]),
         
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])

@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import Pagination
 
 struct Empty: Content {}
 
@@ -43,7 +44,6 @@ struct ResponseJSON<T: Content>: Content {
         self.data = data
     }
 }
- 
 
 enum ResponseStatus:Int,Content {
     case ok = 200
