@@ -15,4 +15,6 @@ struct Chapter: BaseSQLModel {
 
 extension Chapter {
     typealias Database = MySQLDatabase
+    
+    
 }

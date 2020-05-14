@@ -60,7 +60,9 @@ let package = Package(
                                             "APIErrorMiddleware",
                                             "SwiftSMTP",
                                             "SwiftSoup",
-                                            "LoggerAPI"]),
+                                            "LoggerAPI",
+                                            "Pagination"
+        ]),
         
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])

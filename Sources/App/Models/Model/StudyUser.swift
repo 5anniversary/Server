@@ -12,7 +12,10 @@ struct StudyUser: BaseSQLModel {
 extension StudyUser {
     typealias Database = MySQLDatabase
     
-    mutating func update(with container: String)  {
+    mutating func update(with container: StudyInfoContainer) -> StudyUser  {
         
+        
+        
+        return self
     }
 }
