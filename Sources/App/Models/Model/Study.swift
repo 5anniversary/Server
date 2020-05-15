@@ -79,13 +79,13 @@ extension Study {
         return self
     }
 
-//    mutating func deleteWantUser(with container: StudyInfoContainer) -> Study {
-//        if let new = container.wantUser {
-//            self.wantUser?.remove(at: <#T##Int#>)
-//        }
-//
-//        return self
-//    }
+    mutating func deleteWantUser(with container: StudyInfoContainer) -> Study {
+        if let new = container.wantUser {
+            self.wantUser?.remove(
+        }
+
+        return self
+    }
 
 }
 

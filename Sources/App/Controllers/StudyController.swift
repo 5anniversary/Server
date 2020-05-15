@@ -15,13 +15,16 @@ final class StudyController: RouteCollection {
                    at: "updateStudyChief",
                    use: updateStudyChiefHandler)
         
-        //        group.post(StudyInfoContainer.self,
-        //                   at:"getCategoryInfo",
-        //                   use: CategoryStudyListHandler)
-        //        group.post(StudyInfoContainer.self,
-        //                   at:"getStudyInfo",
-        //                   use: StudyListHandler)
-        
+        group.post(StudyInfoContainer.self,
+                   at:"getCategoryInfo",
+                   use: CategoryStudyListHandler)
+        group.post(StudyInfoContainer.self,
+                   at:"getStudyInfo",
+                   use: StudyListHandler)
+        group.post(StudyInfoContainer.self,
+                   at:"addwantuser",
+                   use: updateStudyWantUserHandler)
+
         group.get("getInfo", use: allStudyListHandler)
         
     }
@@ -139,8 +142,9 @@ extension StudyController {
             })
         
     }
- 
+    
     // MARK: - 스터디장 수정
+    
     func updateStudyChiefHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
         return AccessToken
@@ -174,6 +178,7 @@ extension StudyController {
     }
     
     // MARK: - 스터디 신청 API route
+    
     func updateStudyWantUserHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
         return AccessToken
@@ -190,12 +195,7 @@ extension StudyController {
                     let study: Study?
                     var existInfo = existInfo
                     
-                    if existInfo?.id == container.id {
-                        study = existInfo?.updateWantUser(with: container)
-                    } else {
-                        return try ResponseJSON<Empty>(status: .error).encode(for: req)
-                    }
-                    
+                    study = existInfo?.updateWantUser(with: container)
                     
                     return (study?.save(on: req).flatMap({ (info) in
                         return try ResponseJSON<Empty>(status: .ok,
@@ -205,6 +205,7 @@ extension StudyController {
             })
     }
     
+    // MARK: - 스터디 신청한 유저 확인 추가 API
     
     func updateStudyUserHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
@@ -236,7 +237,7 @@ extension StudyController {
             })
         
     }
-
+    
     
 }
 

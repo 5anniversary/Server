@@ -1,16 +1,9 @@
-//
-//  ResponseJSON.swift
-//  App
-//
-//  Created by 晋先森 on 2018/5/26.
-//
-
 import Vapor
 import Pagination
 
 struct Empty: Content {}
 
-struct ResponseJSON<T: Content>: Content {
+struct ResponseJSON<T: Content>: Content{
     
     private var status: ResponseStatus
     private var message: String
