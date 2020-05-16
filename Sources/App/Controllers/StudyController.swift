@@ -9,23 +9,26 @@ final class StudyController: RouteCollection {
         let group = router.grouped("study")
         
         group.post(StudyInfoContainer.self,
-                   at: "createStudy",
+                   at: "create",
                    use: createStudyHandler)
+        
         group.post(StudyInfoContainer.self,
-                   at: "updateStudyChief",
+                   at: "updatechief",
                    use: updateStudyChiefHandler)
         
         group.post(StudyInfoContainer.self,
-                   at:"getCategoryInfo",
+                   at:"getcategory",
                    use: CategoryStudyListHandler)
+        
         group.post(StudyInfoContainer.self,
-                   at:"getStudyInfo",
+                   at:"getstudyinfo",
                    use: StudyListHandler)
+        
         group.post(StudyInfoContainer.self,
                    at:"addwantuser",
                    use: updateStudyWantUserHandler)
 
-        group.get("getInfo", use: allStudyListHandler)
+        group.get("getinfo", use: allStudyListHandler)
         
     }
     
@@ -38,9 +41,13 @@ extension StudyController {
     func allStudyListHandler(_ req: Request) throws -> Future<Response> {
         return Study
             .query(on: req)
+            .sort(\.createdAt,.descending)
+            .query(page: req.page)
             .all()
             .flatMap({ (studies) in
                 let study = studies.compactMap({ stu -> Study in
+                    var stu = stu; stu.chapter = nil; stu.chiefUser = nil; stu.studyUser = nil
+                    stu.wantUser = nil; stu.fine = nil;
                     return stu
                 })
                 return try ResponseJSON<[Study]>(data: study).encode(for: req)
@@ -62,11 +69,13 @@ extension StudyController {
                 return Study
                     .query(on: req)
                     .filter(\.category == container.category ?? "")
-                    .sort(\.id)
+                    .sort(\.createdAt,.descending)
                     .all()
                     .flatMap({ (category) in
                         let categorys = category.compactMap({ cate -> Study in
-                            return cate
+                            var stu = cate; stu.chapter = nil; stu.chiefUser = nil; stu.studyUser = nil
+                            stu.wantUser = nil; stu.fine = nil;
+                            return stu
                         })
                         return try ResponseJSON<[Study]>(data: categorys).encode(for: req)
                     })
@@ -114,6 +123,7 @@ extension StudyController {
                 
                 return futureFirst.flatMap({ _ in
                     let study: Study?
+                    
                     study = Study(id: nil,
                                   name: container.name ?? "",
                                   category: container.category ?? "",
@@ -128,7 +138,6 @@ extension StudyController {
                                   studyUser: container.studyUser ?? [],
                                   wantUser: container.wantUser ?? [],
                                   fine: container.fine ?? Fine.init(id: nil,
-                                                                    studyID: 0,
                                                                     attendance: 0,
                                                                     tardy: 0,
                                                                     assignment: 0)
@@ -142,6 +151,36 @@ extension StudyController {
             })
         
     }
+    
+    // MARK: - 스터디 수정 API
+    
+    func updateStudyHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = Study.query(on: req).filter(\.id == container.id).first()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    let study: Study?
+                    var existInfo = existInfo
+                    
+                    study = existInfo?.update(with: container)
+
+                    return (study!.save(on: req).flatMap({ (info) in
+                        return try ResponseJSON<Empty>(status: .ok,
+                                                       message: "요청 성공").encode(for: req)
+                    }))
+                })
+            })
+        
+    }
+
     
     // MARK: - 스터디장 수정
     
@@ -238,6 +277,40 @@ extension StudyController {
         
     }
     
+    // MARK: - 챕터 생성 API
+    
+    func createChapterHandler(_ req: Request, container: ChapterInfoContainer) throws -> Future<Response> {
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = Chapter.query(on: req).filter(\.id == container.id).first()
+                
+                return futureFirst.flatMap({ _ in
+                    let chapter: Chapter?
+                    
+                    chapter = Chapter(id: nil,
+                                      studyID: container.studyID,
+                                      content: container.content,
+                                      date: container.date,
+                                      place: container.place
+                    )
+                    
+                    return (chapter!.save(on: req).flatMap({ (info) in
+                        return try ResponseJSON<Empty>(status: .ok,
+                                                       message: "요청 성공").encode(for: req)
+                    }))
+                })
+            })
+        
+    }
+
+    
     
 }
 
@@ -260,4 +333,17 @@ struct StudyInfoContainer: Content {
     var chapter: [Chapter]?
     var fine: Fine?
     
+}
+
+struct ChapterInfoContainer: Content {
+    var token: String
+    
+    var id: Int?
+    var studyID: Int
+    var number: Int
+    var content: String
+    var date: Date
+    var place: String
+    var attendance: Int
+    var isAssignment: Bool
 }

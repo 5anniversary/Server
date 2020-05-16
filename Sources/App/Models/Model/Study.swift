@@ -16,6 +16,10 @@ struct Study: BaseSQLModel {
     var chiefUser: StudyUser?
     var studyUser: [StudyUser]?
     var wantUser: [StudyUser]?
+    
+    static var createdAtKey: TimestampKey? = \Study.createdAt
+    
+    var createdAt: Date?
     var fine: Fine?
 }
 
@@ -80,9 +84,9 @@ extension Study {
     }
 
     mutating func deleteWantUser(with container: StudyInfoContainer) -> Study {
-        if let new = container.wantUser {
-            self.wantUser?.remove(
-        }
+//        if let new = container.wantUser {
+//            self.wantUser?.remove(
+//        }
 
         return self
     }
