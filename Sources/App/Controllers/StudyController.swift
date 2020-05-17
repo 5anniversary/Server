@@ -70,6 +70,7 @@ extension StudyController {
                     .query(on: req)
                     .filter(\.category == container.category ?? "")
                     .sort(\.createdAt,.descending)
+                    .query(page: req.page)
                     .all()
                     .flatMap({ (category) in
                         let categorys = category.compactMap({ cate -> Study in

@@ -43,7 +43,7 @@ public func configure(_ config: inout Config,
     middlewares.use(GuardianMiddleware(rate: Rate(limit: 20,
                                                   interval: .minute),
                                        closure: { (req) -> EventLoopFuture<Response>? in
-        let dict = ["status":"429","message":"访问太频繁"]
+        let dict = ["status":"429","message":"요청이 너무 잦습니다"]
         return try dict.encode(for: req)
     }))
     
