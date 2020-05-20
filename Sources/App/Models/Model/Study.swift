@@ -4,14 +4,14 @@ import Pagination
 
 struct Study: BaseSQLModel {
     var id: Int?
-    var name: String
-    var category: String
-    var content: String
-    var image: String
-    var location: String
+    var name: String?
+    var category: String?
+    var content: String?
+    var image: String?
+    var location: String?
     var userLimit: Int?
-    var isFine: Bool
-    var isEnd: Bool
+    var isFine: Bool?
+    var isEnd: Bool?
     var chapter: [Chapter]?
     var chiefUser: StudyUser?
     var studyUser: [StudyUser]?
@@ -83,10 +83,29 @@ extension Study {
         return self
     }
 
+    mutating func moveWantToStudy(with container: StudyInfoContainer) -> Study {
+        if let new = container.deleteUserIndex {
+            self.wantUser?.remove(at: new)
+        }
+        if let new = container.studyUser {
+            self.studyUser?.append(contentsOf: new)
+        }
+
+        return self
+    }
+
     mutating func deleteWantUser(with container: StudyInfoContainer) -> Study {
-//        if let new = container.wantUser {
-//            self.wantUser?.remove(
-//        }
+        if let new = container.deleteUserIndex {
+            self.wantUser?.remove(at: new)
+        }
+
+        return self
+    }
+
+    mutating func deleteStudyUser(with container: StudyInfoContainer) -> Study {
+        if let new = container.deleteUserIndex {
+            self.studyUser?.remove(at: new)
+        }
 
         return self
     }

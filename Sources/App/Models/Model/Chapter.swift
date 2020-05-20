@@ -5,7 +5,7 @@ struct Chapter: BaseSQLModel {
     var id: Int?
     var studyID: Int
     var content: String
-    var date: Date
+    var date: String
     var place: String
     
     static var createdAtKey: TimestampKey? = \Chapter.createdAt

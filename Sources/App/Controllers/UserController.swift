@@ -44,7 +44,7 @@ extension UserController {
     func loginUserHandler(_ req: Request,user: User) throws -> Future<Response> {
         
         let futureFirst = User.query(on: req).filter(\.email == user.email).first()
-        
+
         return futureFirst.flatMap({ (existingUser) in
             guard let existingUser = existingUser else {
                 return try ResponseJSON<Empty>(status: .userNotExist).encode(for: req)
@@ -175,7 +175,7 @@ extension UserController {
         
         guard let token = req.query[String.self,
                                     at: "token"] else {
-            return try ResponseJSON<Empty>(status: .error,
+            return try ResponseJSON<Empty>(status: .token,
                                            message: "토큰이 없습니다").encode(for: req)
         }
         

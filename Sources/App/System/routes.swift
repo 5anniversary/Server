@@ -4,7 +4,7 @@ import Vapor
 public func routes(_ router: Router) throws {
     // Basic "It works" example
     router.get { req in
-        return "study together 서버 입니당."
+        return "study together 서버입니다."
     }
     
     // Basic "Hello, world!" example
@@ -22,4 +22,5 @@ public func routes(_ router: Router) throws {
     try router.register(collection: CategoryController())
     try router.register(collection: StudyController())
     try router.register(collection: AuthenRouteController())
+    try router.register(collection: ChapterController())
 }
