@@ -1,6 +1,5 @@
 import Vapor
 import FluentMySQL
-import Pagination
 
 struct Check: BaseSQLModel {
     var id: Int?
