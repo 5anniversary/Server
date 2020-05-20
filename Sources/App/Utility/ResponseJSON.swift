@@ -1,5 +1,4 @@
 import Vapor
-import Pagination
 
 struct Empty: Content {}
 
