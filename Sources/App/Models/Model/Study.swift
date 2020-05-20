@@ -111,4 +111,3 @@ extension Study {
 
 }
 
-extension Study: Paginatable { }
