@@ -138,7 +138,9 @@ extension UserController {
     }
     
 
-    private func changePasswordHandler(_ req: Request,inputContent: PasswordContainer) throws -> Future<Response> {
+    private func changePasswordHandler(_ req: Request,
+                                       inputContent: PasswordContainer)
+        throws -> Future<Response> {
         
         return User.query(on: req).filter(\.email == inputContent.account).first().flatMap({ (existUser) in
             

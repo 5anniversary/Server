@@ -1,7 +1,6 @@
 import Vapor
 import Crypto
 import Authentication
-import Pagination
 
 final class StudyController: RouteCollection {
     
