@@ -12,6 +12,7 @@ struct AuthenRouteController: RouteCollection {
         
         let group = router.grouped("api","token")
         
+        
         group.post(RefreshTokenContainer.self, at: "refresh", use: refreshAccessTokenHandler)
         
         let basicAuthMiddleware = User.basicAuthMiddleware(using: BCrypt)
