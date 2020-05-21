@@ -57,6 +57,23 @@ extension StudyController {
             })
     }
     
+    func allqStudyListHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
+        return Study
+            .query(on: req)
+            .filter(\.studyUser == container.studyUser)
+            .sort(\.createdAt,.descending)
+            .query(page: req.page)
+            .all()
+            .flatMap({ (studies) in
+                let study = studies.compactMap({ stu -> Study in
+                    var stu = stu; stu.chapter = nil; stu.chiefUser = nil;stu.category = nil
+                    stu.wantUser = nil; stu.fine = nil;
+                    return stu
+                })
+                return try ResponseJSON<[Study]>(data: study).encode(for: req)
+            })
+    }
+
     // MARK: - 한 카테고리 스터디 목록 불러오기
     
     func CategoryStudyListHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
@@ -125,8 +142,8 @@ extension StudyController {
                 
                 let futureFirst = Study.query(on: req).filter(\.id == container.id).first()
                 
-                return futureFirst.flatMap({ _ in
-                    let study: Study?
+                return futureFirst.flatMap({ (existInfo) in
+                    var study: Study?
                     
                     study = Study(id: nil,
                                   name: container.name ?? "",
@@ -139,7 +156,7 @@ extension StudyController {
                                   isEnd: container.isEnd ?? false,
                                   chapter: container.chapter ?? [],
                                   chiefUser: container.chiefUser,
-                                  studyUser: container.studyUser ?? [],
+                                  studyUser: container.studyUser,
                                   wantUser: container.wantUser ?? [],
                                   fine: container.fine ?? Fine.init(id: nil,
                                                                     attendance: 0,
@@ -148,8 +165,21 @@ extension StudyController {
                     )
                     
                     return (study!.save(on: req).flatMap({ (info) in
-                        return try ResponseJSON<Empty>(status: .ok,
-                                                       message: "요청 성공").encode(for: req)
+                        let studyUser: StudyUser?
+                        
+                        studyUser = StudyUser(id: nil,
+                                              studyID: info.id,
+                                              name: container.chiefUser?.name ?? "",
+                                              userID: container.chiefUser?.userID ?? "",
+                                              image: container.chiefUser?.image ?? "",
+                                              attendance: 0,
+                                              tardy: 0,
+                                              assignment: 0)
+                        
+                        return (studyUser!.save(on: req).flatMap({ (info) in
+                            return try ResponseJSON<Empty>(status: .ok,
+                                                           message: "요청 성공").encode(for: req)
+                        }))
                     }))
                 })
             })
@@ -273,8 +303,20 @@ extension StudyController {
                     }
                     
                     return (study?.save(on: req).flatMap({ (info) in
-                        return try ResponseJSON<Empty>(status: .ok,
-                                                       message: "요청 성공").encode(for: req)
+                        let studyUser: StudyUser?
+                        
+                        studyUser = StudyUser(id: nil,
+                                              studyID: info.id,
+                                              name: container.studyUser?[0].name ?? "",
+                                              userID: container.studyUser?[0].userID ?? "",
+                                              image: container.studyUser?[0].image ?? "",
+                                              attendance: 0,
+                                              tardy: 0,
+                                              assignment: 0)
+                        return (studyUser?.save(on: req).flatMap({ (info) in
+                            return try ResponseJSON<Empty>(status: .ok,
+                                                           message: "요청 성공").encode(for: req)
+                        }))!
                     }))!
                 })
             })

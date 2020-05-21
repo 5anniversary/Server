@@ -12,6 +12,7 @@ struct UserInfo : BaseSQLModel {
     var nickName: String?
     var location: String?
     var image: String?
+    var content: String?
     var userCategory: [String]?
     var study: Studying?
     var endStudy: Studying?
