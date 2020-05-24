@@ -20,7 +20,7 @@ extension EmailController {
                 .filter(\.email == content.email)
                 .count()
                 .flatMap({ (count) in
-                guard count < 100 else {
+                guard count < 5 else {
                    return try ResponseJSON<Empty>(status: .error,
                                                   message: "전송 한도가 초과되었습니다.").encode(for: req)
                 }

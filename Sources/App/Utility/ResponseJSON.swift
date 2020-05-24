@@ -69,13 +69,7 @@ enum ResponseStatus:Int,Content {
         case .pictureTooBig:
             return "사진의 크기가 커 압축이 필요합니다."
         }
-        
+
     }
 
 }
-
-
-
-
-
-

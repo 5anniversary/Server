@@ -21,7 +21,7 @@ final class UserController: RouteCollection {
         
         // get
         group.get("getUserInfo", use: getUserInfoHandler)
-        group.get("avatar",String.parameter, use: getUserAvatarHandler)
+        group.get("avatar", String.parameter, use: getUserAvatarHandler)
         
     }
     
@@ -173,7 +173,7 @@ extension UserController {
         })
     }
     
-    func getUserInfoHandler(_ req: Request) throws -> Future<Response> {
+    func getUserInfoHandler(_ req: Request) throws -> Future< Response> {
         
         guard let token = req.query[String.self,
                                     at: "token"] else {
