@@ -14,8 +14,8 @@ struct UserInfo : BaseSQLModel {
     var image: String?
     var content: String?
     var userCategory: [String]?
-    var study: Studying?
-    var endStudy: Studying?
+    var study: [Studying]?
+    var endStudy: [Studying]?
     
     typealias Database = MySQLDatabase
 }

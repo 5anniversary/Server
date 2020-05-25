@@ -28,7 +28,7 @@ final class StudyController: RouteCollection {
                    use: updateStudyWantUserHandler)
         
         group.post(StudyInfoContainer.self,
-                   at:"move",
+                   at:"addstudyuser",
                    use: updateStudyUserHandler)
         
         group.get("getinfo", use: allStudyListHandler)
