@@ -166,6 +166,7 @@ extension StudyController {
                     
                     return (study!.save(on: req).flatMap({ (info) in
                         let studyUser: StudyUser?
+                        let studying: Studying?
                         
                         studyUser = StudyUser(id: nil,
                                               studyID: info.id,
@@ -175,6 +176,15 @@ extension StudyController {
                                               attendance: 0,
                                               tardy: 0,
                                               assignment: 0)
+                        
+                        studying = Studying(id: nil,
+                                            name: info.name,
+                                            studyID: info.id,
+                                            userID: container.chiefUser?.userID,
+                                            category: info.category,
+                                            isEnd: 0)
+                        
+                        studying!.save(on: req)
                         
                         return (studyUser!.save(on: req).flatMap({ (info) in
                             return try ResponseJSON<Empty>(status: .ok,
@@ -304,7 +314,9 @@ extension StudyController {
                     
                     return (study?.save(on: req).flatMap({ (info) in
                         let studyUser: StudyUser?
-                        
+                        let studying: Studying?
+                        let user: UserInfo?
+
                         studyUser = StudyUser(id: nil,
                                               studyID: info.id,
                                               name: container.studyUser?[0].name ?? "",
@@ -313,6 +325,16 @@ extension StudyController {
                                               attendance: 0,
                                               tardy: 0,
                                               assignment: 0)
+                        
+                        studying = Studying(id: nil,
+                                            name: info.name,
+                                            studyID: info.id,
+                                            userID: container.studyUser?[0].userID,
+                                            category: existInfo?.category,
+                                            isEnd: 0)
+                        
+                        studying?.save(on: req)
+
                         return (studyUser?.save(on: req).flatMap({ (info) in
                             return try ResponseJSON<Empty>(status: .ok,
                                                            message: "요청 성공").encode(for: req)
@@ -323,7 +345,62 @@ extension StudyController {
         
     }
         
+    // MARK: - 스터디 종료 API
     
+    func endStudyHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = Study.query(on: req).filter(\.id == container.id).first()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    let study: Study?
+                    var existInfo = existInfo
+                    
+                    if existInfo?.id == container.id {
+                        study = existInfo?.moveWantToStudy(with: container)
+                    } else {
+                        return try ResponseJSON<Empty>(status: .error).encode(for: req)
+                    }
+                    
+                    return (study?.save(on: req).flatMap({ (info) in
+                        let studyUser: StudyUser?
+                        let studying: Studying?
+
+                        studyUser = StudyUser(id: nil,
+                                              studyID: info.id,
+                                              name: container.studyUser?[0].name ?? "",
+                                              userID: container.studyUser?[0].userID ?? "",
+                                              image: container.studyUser?[0].image ?? "",
+                                              attendance: 0,
+                                              tardy: 0,
+                                              assignment: 0)
+                        
+                        studying = Studying(id: nil,
+                                            name: info.name,
+                                            studyID: info.id,
+                                            userID: container.studyUser?[0].userID,
+                                            category: existInfo?.category,
+                                            isEnd: 0)
+                        
+                        studying?.save(on: req)
+
+                        return (studyUser?.save(on: req).flatMap({ (info) in
+                            return try ResponseJSON<Empty>(status: .ok,
+                                                           message: "요청 성공").encode(for: req)
+                        }))!
+                    }))!
+                })
+            })
+        
+    }
+
     
     
 }

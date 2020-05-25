@@ -142,7 +142,7 @@ extension UserController {
                                        inputContent: PasswordContainer)
         throws -> Future<Response> {
         
-        return User.query(on: req).filter(\.email == inputContent.account).first().flatMap({ (existUser) in
+        return User.query(on: req).filter(\.email == inputContent.email).first().flatMap({ (existUser) in
             
             guard let existUser = existUser else {
                 return try ResponseJSON<Empty>(status: .userNotExist).encode(for: req)
@@ -261,7 +261,7 @@ fileprivate struct TokenContainer: Content {
 }
 
 fileprivate struct PasswordContainer: Content {
-    var account: String
+    var email: String
     var password: String
     var newPassword: String
     

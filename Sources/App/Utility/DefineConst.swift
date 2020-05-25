@@ -26,7 +26,7 @@ public let ImageMaxByteSize = 2048000
 public let PasswordMaxCount = 18
 public let passwordMinCount = 6
 
-public let AccountMaxCount = 18
+public let AccountMaxCount = 50
 public let AccountMinCount = 6
 
 

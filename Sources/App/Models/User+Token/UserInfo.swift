@@ -45,4 +45,13 @@ extension UserInfo {
         return self
     }
     
+    mutating func studyUpdate(with container: Studying) -> UserInfo{
+        
+        self.study?.removeAll()
+        
+        self.study?.append(container)
+        
+        return self
+    }
+    
 }

@@ -8,4 +8,6 @@ struct Studying: BaseSQLModel {
     var userID: String?
     var category: String?
     var isEnd: Int?
+    
+    typealias Database = MySQLDatabase
 }
