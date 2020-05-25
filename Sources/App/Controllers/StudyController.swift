@@ -31,6 +31,12 @@ final class StudyController: RouteCollection {
                    at:"addstudyuser",
                    use: updateStudyUserHandler)
         
+        group.post(StudyInfoContainer.self,
+                   at:"updatestudy",
+                   use: updateStudyHandler)
+
+        
+        
         group.get("getinfo", use: allStudyListHandler)
         
     }
@@ -121,7 +127,8 @@ extension StudyController {
                     .all()
                     .flatMap({ (category) in
                         let categorys = category.compactMap({ cate -> Study in
-                            return cate
+                            var ca = cate; ca.chapter = nil
+                            return ca
                         })
                         return try ResponseJSON<[Study]>(data: categorys).encode(for: req)
                     })
@@ -212,10 +219,14 @@ extension StudyController {
                 
                 return futureFirst.flatMap({ (existInfo) in
                     let study: Study?
-                    var existInfo = existInfo
-                    
-                    study = existInfo?.update(with: container)
-                    
+
+                    if var existInfo = existInfo {
+                        study = existInfo.update(with: container)
+                    } else {
+                        return try ResponseJSON<Empty>(status: .error,
+                                                       message: "실패").encode(for: req)
+                    }
+
                     return (study!.save(on: req).flatMap({ (info) in
                         return try ResponseJSON<Empty>(status: .ok,
                                                        message: "요청 성공").encode(for: req)
@@ -242,19 +253,18 @@ extension StudyController {
                 
                 return futureFirst.flatMap({ (existInfo) in
                     let study: Study?
-                    var existInfo = existInfo
                     
-                    if existInfo?.id == container.id {
-                        study = existInfo?.updateChief(with: container)
+                    if var existInfo = existInfo {
+                        study = existInfo.updateChief(with: container)
                     } else {
-                        return try ResponseJSON<Empty>(status: .error).encode(for: req)
+                        return try ResponseJSON<Empty>(status: .error,
+                                                       message: "실패").encode(for: req)
                     }
                     
-                    
-                    return (study?.save(on: req).flatMap({ (info) in
+                    return (study!.save(on: req).flatMap({ (info) in
                         return try ResponseJSON<Empty>(status: .ok,
                                                        message: "요청 성공").encode(for: req)
-                    }))!
+                    }))
                 })
             })
         
@@ -345,7 +355,7 @@ extension StudyController {
         
     }
         
-    // MARK: - 스터디 종료 API
+    // MARK: - 스터디 종료 API : Todo
     
     func endStudyHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
