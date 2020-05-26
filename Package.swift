@@ -9,7 +9,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "3.0.0"),
         
-        // 🔵 Swift ORM (queries, models, relations, etc) built on SQLite 3.
         .package(url: "https://github.com/skelpo/APIErrorMiddleware.git",
                  from: "0.1.0"),
         .package(url: "https://github.com/IBM-Swift/Swift-SMTP.git",
@@ -39,7 +38,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/multipart.git",
                  from: "3.0.0"),
         .package(url: "https://github.com/IBM-Swift/LoggerAPI.git",
-                 .upToNextMinor(from: "1.8.0"))
+                 .upToNextMinor(from: "1.8.0")),
     ],
     targets: [
         .target(name: "App", dependencies: ["FluentMySQL",

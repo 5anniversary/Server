@@ -34,8 +34,11 @@ final class StudyController: RouteCollection {
         group.post(StudyInfoContainer.self,
                    at:"updatestudy",
                    use: updateStudyHandler)
-
         
+        group.get("search",
+                   use: searchHandler)
+        
+        group.delete("delete", use: deleteHandler)
         
         group.get("getinfo", use: allStudyListHandler)
         
@@ -325,7 +328,6 @@ extension StudyController {
                     return (study?.save(on: req).flatMap({ (info) in
                         let studyUser: StudyUser?
                         let studying: Studying?
-                        let user: UserInfo?
 
                         studyUser = StudyUser(id: nil,
                                               studyID: info.id,
@@ -410,8 +412,59 @@ extension StudyController {
             })
         
     }
-
     
+    // MARK: - 스터디 검색 API : Todo
+    
+    func searchHandler(_ req: Request) throws -> Future<Response> {
+        guard let name = req.query[String.self, at: "name"] else {
+            throw Abort(.badRequest, reason: "Missing search term in request")
+        }
+        
+        guard let token = req.query[String.self, at: "token"] else {
+            throw Abort(.badRequest, reason: "Missing search term in request")
+        }
+        
+        let bearToken = BearerAuthorization(token: token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+
+                let result = req.withPooledConnection(to: .mysql) { conn -> Future<[Study]> in
+                    conn.raw("Select * from Study where name like '%" + name + "%'" ).all(decoding: Study.self)
+                }
+        
+                return result.flatMap({ (result) in
+                    return try ResponseJSON<[Study]>(data: result).encode(for: req)
+            })
+        })
+    }
+
+    // MARK: - 스터디 삭제 API
+    func deleteHandler(_ req: Request) throws -> Future<Response> {
+        let token = try req.query.get(String.self, at: "token")
+        let id = try req.query.get(Int.self, at: "id")
+        
+        let bearToken = BearerAuthorization(token: token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureResult = Study.query(on: req).filter(\.id == id).delete()
+                
+                return futureResult.flatMap({ (existInfo) in
+                    return try ResponseJSON<Empty>(status: .ok, message: "삭제가 완료되었습니다.").encode(for: req)
+                })
+        })
+    }
+
     
 }
 

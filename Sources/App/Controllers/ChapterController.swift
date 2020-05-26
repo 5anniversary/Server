@@ -125,7 +125,7 @@ extension ChapterController {
             })
     }
     
-    //
+    // 
     
     func checkHandler(_ req: Request, container: ChapterInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
