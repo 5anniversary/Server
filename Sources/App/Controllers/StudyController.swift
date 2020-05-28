@@ -564,7 +564,6 @@ extension StudyController {
             let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
                 
             return futureFirst.flatMap({ (existInfo) in
-                
                 let userInfo: UserInfo?
                 
                 if var existInfo = existInfo {
