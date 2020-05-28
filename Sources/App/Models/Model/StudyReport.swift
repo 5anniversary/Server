@@ -15,7 +15,7 @@ struct StudyReport: BaseSQLModel {
 
 extension StudyReport {
     
-    mutating func contentReport(with container: ReportInfoContainer) -> StudyReport  {
+    mutating func studyReport(with container: ReportInfoContainer) -> StudyReport  {
         
         self.count! += 1
   

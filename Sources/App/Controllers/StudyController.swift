@@ -492,7 +492,7 @@ extension StudyController {
                         container.reportUserID = [existToken.userID]
                         
                         if var existInfo = existInfo {
-                            userInfo = existInfo.contentReport(with: container)
+                            userInfo = existInfo.studyReport(with: container)
                         } else {
                             userInfo = StudyReport(id: nil,
                                                    contentID: container.contentID,
