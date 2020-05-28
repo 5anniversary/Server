@@ -18,7 +18,10 @@ final class UserController: RouteCollection {
         group.post(PasswordContainer.self, at: "changePassword", use: changePasswordHandler)
         group.post(UserInfoContainer.self, at: "updateInfo", use: updateUserInfoHandler)
         group.post("exit", use: exitUserHandler)
-        
+        group.post(ReportInfoContainer.self,
+                   at:"report",
+                   use: reportUserHandler)
+
         // get
         group.get("getUserInfo", use: getUserInfoHandler)
         group.get("avatar", String.parameter, use: getUserAvatarHandler)
@@ -251,6 +254,41 @@ extension UserController {
         })
     }
     
+    func reportUserHandler(_ req: Request,container: ReportInfoContainer) throws -> Future<Response> {
+        
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                guard let existToken = existToken else {
+                return try ResponseJSON<Empty>(status: .token).encode(for: req)
+            }
+            
+            let futureFirst = UserReport.query(on: req).filter(\.userID == container.userID).first()
+            return futureFirst.flatMap({ (existInfo) in
+                
+                let userInfo: UserReport?
+                
+                if var existInfo = existInfo {
+                    userInfo = existInfo.userReport(with: container)
+                    
+                } else {
+                    userInfo = UserReport(id: nil,
+                                          userID: container.userID,
+                                          content: container.reportContent,
+                                          reportUserID: [existToken.userID],
+                                          count: 1)
+                }
+                
+                return (userInfo!.save(on: req).flatMap({ (info) in
+                    return try ResponseJSON<Empty>(status: .ok,
+                                                   message: "요청 성공").encode(for: req)
+                }))
+            })
+        })
+    }
+    
+
 }
 
 
@@ -290,4 +328,14 @@ struct UserInfoContainer: Content {
     var image: String?
     var category: [String]?
     
+}
+
+struct ReportInfoContainer: Content {
+    var token: String
+    
+    var content: String?
+    var contentID: Int?
+    var reportContent: [String]?
+    var reportUserID: [String]?
+    var userID: String?
 }

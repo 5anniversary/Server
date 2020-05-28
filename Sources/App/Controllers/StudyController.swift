@@ -35,8 +35,12 @@ final class StudyController: RouteCollection {
                    at:"updatestudy",
                    use: updateStudyHandler)
         
+        group.post(ReportInfoContainer.self,
+                   at:"report",
+                   use: reportStudyHandler)
+        
         group.get("search",
-                   use: searchHandler)
+                  use: searchHandler)
         
         group.delete("delete", use: deleteHandler)
         
@@ -82,7 +86,7 @@ extension StudyController {
                 return try ResponseJSON<[Study]>(data: study).encode(for: req)
             })
     }
-
+    
     // MARK: - 한 카테고리 스터디 목록 불러오기
     
     func CategoryStudyListHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
@@ -207,7 +211,7 @@ extension StudyController {
     }
     
     // MARK: - 스터디 수정 API
-    
+
     func updateStudyHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
         return AccessToken
@@ -222,14 +226,14 @@ extension StudyController {
                 
                 return futureFirst.flatMap({ (existInfo) in
                     let study: Study?
-
+                    
                     if var existInfo = existInfo {
                         study = existInfo.update(with: container)
                     } else {
                         return try ResponseJSON<Empty>(status: .error,
                                                        message: "실패").encode(for: req)
                     }
-
+                    
                     return (study!.save(on: req).flatMap({ (info) in
                         return try ResponseJSON<Empty>(status: .ok,
                                                        message: "요청 성공").encode(for: req)
@@ -328,7 +332,7 @@ extension StudyController {
                     return (study?.save(on: req).flatMap({ (info) in
                         let studyUser: StudyUser?
                         let studying: Studying?
-
+                        
                         studyUser = StudyUser(id: nil,
                                               studyID: info.id,
                                               name: container.studyUser?[0].name ?? "",
@@ -346,7 +350,7 @@ extension StudyController {
                                             isEnd: 0)
                         
                         studying?.save(on: req)
-
+                        
                         return (studyUser?.save(on: req).flatMap({ (info) in
                             return try ResponseJSON<Empty>(status: .ok,
                                                            message: "요청 성공").encode(for: req)
@@ -356,7 +360,7 @@ extension StudyController {
             })
         
     }
-        
+    
     // MARK: - 스터디 종료 API : Todo
     
     func endStudyHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
@@ -384,7 +388,7 @@ extension StudyController {
                     return (study?.save(on: req).flatMap({ (info) in
                         let studyUser: StudyUser?
                         let studying: Studying?
-
+                        
                         studyUser = StudyUser(id: nil,
                                               studyID: info.id,
                                               name: container.studyUser?[0].name ?? "",
@@ -402,7 +406,7 @@ extension StudyController {
                                             isEnd: 0)
                         
                         studying?.save(on: req)
-
+                        
                         return (studyUser?.save(on: req).flatMap({ (info) in
                             return try ResponseJSON<Empty>(status: .ok,
                                                            message: "요청 성공").encode(for: req)
@@ -432,17 +436,17 @@ extension StudyController {
                 guard existToken != nil else {
                     return try ResponseJSON<Empty>(status: .token).encode(for: req)
                 }
-
+                
                 let result = req.withPooledConnection(to: .mysql) { conn -> Future<[Study]> in
                     conn.raw("Select * from Study where name like '%" + name + "%'" ).all(decoding: Study.self)
                 }
-        
+                
                 return result.flatMap({ (result) in
                     return try ResponseJSON<[Study]>(data: result).encode(for: req)
+                })
             })
-        })
     }
-
+    
     // MARK: - 스터디 삭제 API
     func deleteHandler(_ req: Request) throws -> Future<Response> {
         let token = try req.query.get(String.self, at: "token")
@@ -462,9 +466,49 @@ extension StudyController {
                 return futureResult.flatMap({ (existInfo) in
                     return try ResponseJSON<Empty>(status: .ok, message: "삭제가 완료되었습니다.").encode(for: req)
                 })
-        })
+            })
     }
-
+    
+    func reportStudyHandler(_ req: Request,container: ReportInfoContainer) throws -> Future<Response> {
+        
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                guard let existToken = existToken else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = StudyReport.query(on: req).filter(\.contentID == container.contentID).first()
+                return futureFirst.flatMap({ (existInfo) in
+                    
+                    let content = Study.query(on: req).filter(\.id == container.contentID).first()
+                    
+                    return content.flatMap({ contentInfo in
+                        let userInfo: StudyReport?
+                        
+                        var container = container
+                        
+                        container.reportUserID = [existToken.userID]
+                        
+                        if var existInfo = existInfo {
+                            userInfo = existInfo.contentReport(with: container)
+                        } else {
+                            userInfo = StudyReport(id: nil,
+                                                   contentID: container.contentID,
+                                                   content: container.content,
+                                                   reportContent: container.reportContent,
+                                                   reportUserID: [existToken.userID],
+                                                   count: 1)
+                        }
+                        return (userInfo!.save(on: req).flatMap({ (info) in
+                            return try ResponseJSON<Empty>(status: .ok,
+                                                           message: "요청 성공").encode(for: req)
+                        }))
+                    })
+                })
+            })
+    }
     
 }
 
