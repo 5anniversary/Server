@@ -42,7 +42,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "App", dependencies: ["FluentMySQL",
-ㅗ                                            "Routing",
+                                            "Routing",
                                             "Authentication",
                                             "Crypto",
                                             "JWTMiddleware",
