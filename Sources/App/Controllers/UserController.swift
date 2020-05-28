@@ -243,7 +243,9 @@ extension UserController {
                                         location: container.location,
                                         image: container.image,
                                         content: container.content,
-                                        userCategory: container.category)
+                                        userCategory: container.category,
+                                        like: []
+                    )
                 }
                 
                 return (userInfo!.save(on: req).flatMap({ (info) in
@@ -289,6 +291,7 @@ extension UserController {
     }
     
 
+
 }
 
 
@@ -327,6 +330,8 @@ struct UserInfoContainer: Content {
     var content: String?
     var image: String?
     var category: [String]?
+    var like: [LikeStudy]?
+    var likeIndex: Int?
     
 }
 

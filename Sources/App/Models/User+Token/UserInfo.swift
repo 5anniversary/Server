@@ -14,7 +14,7 @@ struct UserInfo : BaseSQLModel {
     var image: String?
     var content: String?
     var userCategory: [String]?
-    var study: [Studying]?
+    var like: [LikeStudy]?
 
     typealias Database = MySQLDatabase
 }
@@ -45,13 +45,23 @@ extension UserInfo {
         return self
     }
     
-    mutating func studyUpdate(with container: Studying) -> UserInfo{
+    mutating func addLikeStudy(with container: UserInfoContainer) -> UserInfo {
         
-        self.study?.removeAll()
-        
-        self.study?.append(container)
+        if let new = container.like {
+            self.like?.append(contentsOf: new)
+        }
         
         return self
     }
+    
+    mutating func removeLikeStudy(with container: UserInfoContainer) -> UserInfo {
+        
+        if let new = container.likeIndex {
+            self.like?.remove(at: new)
+        }
+        
+        return self
+    }
+
     
 }

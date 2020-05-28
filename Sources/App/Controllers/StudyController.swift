@@ -39,6 +39,13 @@ final class StudyController: RouteCollection {
                    at:"report",
                    use: reportStudyHandler)
         
+        group.post(UserInfoContainer.self,
+                   at:"like",
+                   use: addLikeStudyHandler)
+        group.post(UserInfoContainer.self,
+                   at:"cancellike",
+                   use: removeLikeStudyHandler)
+
         group.get("search",
                   use: searchHandler)
         
@@ -509,6 +516,73 @@ extension StudyController {
                 })
             })
     }
+ 
+    func addLikeStudyHandler(_ req: Request,container: UserInfoContainer) throws -> Future<Response> {
+        
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                guard let existToken = existToken else {
+                return try ResponseJSON<Empty>(status: .token).encode(for: req)
+            }
+            
+            let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
+                
+            return futureFirst.flatMap({ (existInfo) in
+                dump(container)
+                let userInfo: UserInfo?
+                
+                if var existInfo = existInfo {
+                    
+                    userInfo = existInfo.addLikeStudy(with: container)
+                    
+                } else {
+                    return try ResponseJSON<Empty>(status: .error,
+                        message: "서버에서 해당 요청에 대한 처리를 하지 못했습니다.").encode(for: req)
+                }
+                
+                return (userInfo!.save(on: req).flatMap({ (info) in
+                    return try ResponseJSON<Empty>(status: .ok,
+                                                   message: "요청 성공").encode(for: req)
+                }))
+            })
+        })
+    }
+
+    
+    func removeLikeStudyHandler(_ req: Request,container: UserInfoContainer) throws -> Future<Response> {
+        
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                guard let existToken = existToken else {
+                return try ResponseJSON<Empty>(status: .token).encode(for: req)
+            }
+            
+            let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
+                
+            return futureFirst.flatMap({ (existInfo) in
+                
+                let userInfo: UserInfo?
+                
+                if var existInfo = existInfo {
+                    userInfo = existInfo.removeLikeStudy(with: container)
+                    
+                } else {
+                    return try ResponseJSON<Empty>(status: .error,
+                        message: "서버에서 해당 요청에 대한 처리를 하지 못했습니다.").encode(for: req)
+                }
+                
+                return (userInfo!.save(on: req).flatMap({ (info) in
+                    return try ResponseJSON<Empty>(status: .ok,
+                                                   message: "요청 성공").encode(for: req)
+                }))
+            })
+        })
+    }
+
     
 }
 
