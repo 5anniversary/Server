@@ -62,11 +62,12 @@ extension UserController {
             return try self.authController
                 .authContainer(for: existingUser, on: req)
                 .flatMap({ (container) in
-                
+
                 var access = AccessContainer(accessToken: container.accessToken)
-                if !req.environment.isRelease {
-                    access.userID = existingUser.userID
-                }
+//                if !req.environment.isRelease {
+                access.userID = existingUser.userID
+//                }
+
                 return try ResponseJSON<AccessContainer>(status: .ok,
                                                          message: "성공",
                                                          data: access).encode(for: req)
@@ -107,10 +108,10 @@ extension UserController {
                     .flatMap({ (container) in
                     
                     var access = AccessContainer(accessToken: container.accessToken)
-                    if !req.environment.isRelease {
-                        access.userID = user.userID
-                    }
-                    
+//                    if !req.environment.isRelease {
+                    access.userID = user.userID
+//                    }
+
                     return try ResponseJSON<AccessContainer>(status: .ok,
                                                              message: "성공",
                                                              data: access).encode(for: req)
