@@ -39,7 +39,10 @@ extension CategoryController {
         var category: Category?
         
         category = Category(id: nil,
-                            name: container.name)
+                            name: container.name,
+                            startColor: container.startColor,
+                            endColor: container.endColor
+        )
         
         return (category?.save(on: req).flatMap({ _ in
             return try ResponseJSON<Empty>(status: .ok, message: "삽입 성공").encode(for: req)
@@ -49,4 +52,6 @@ extension CategoryController {
 
 struct CategoryContainer: Content {
     var name: String
+    var startColor: String
+    var endColor: String
 }
