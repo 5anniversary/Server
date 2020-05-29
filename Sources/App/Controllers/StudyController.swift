@@ -77,23 +77,6 @@ extension StudyController {
             })
     }
     
-    func allqStudyListHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
-        return Study
-            .query(on: req)
-            .filter(\.studyUser == container.studyUser)
-            .sort(\.createdAt,.descending)
-            .query(page: req.page)
-            .all()
-            .flatMap({ (studies) in
-                let study = studies.compactMap({ stu -> Study in
-                    var stu = stu; stu.chapter = nil; stu.chiefUser = nil;stu.category = nil
-                    stu.wantUser = nil; stu.fine = nil;
-                    return stu
-                })
-                return try ResponseJSON<[Study]>(data: study).encode(for: req)
-            })
-    }
-    
     // MARK: - 한 카테고리 스터디 목록 불러오기
     
     func CategoryStudyListHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
@@ -175,6 +158,9 @@ extension StudyController {
                                   userLimit: container.userLimit ?? 0,
                                   isFine: container.isFine ?? false,
                                   isEnd: container.isEnd ?? false,
+                                  isDate: container.isDate ?? false,
+                                  startDate: container.startDate ?? "",
+                                  endDate: container.endDate ?? "",
                                   chapter: container.chapter ?? [],
                                   chiefUser: container.chiefUser,
                                   studyUser: container.studyUser,
@@ -596,6 +582,9 @@ struct StudyInfoContainer: Content {
     var userLimit: Int?
     var isFine: Bool?
     var isEnd: Bool?
+    var isDate: Bool?
+    var startDate: String?
+    var endDate: String?
     var chiefUser : StudyUser?
     var studyUser: [StudyUser]?
     var wantUser: [StudyUser]?

@@ -11,6 +11,9 @@ struct Study: BaseSQLModel {
     var userLimit: Int?
     var isFine: Bool?
     var isEnd: Bool?
+    var isDate: Bool?
+    var startDate: String?
+    var endDate : String?
     var chapter: [Chapter]?
     var chiefUser: StudyUser?
     var studyUser: [StudyUser]?
@@ -46,6 +49,15 @@ extension Study {
         }
         if let new = container.isEnd {
             self.isEnd = new
+        }
+        if let new = container.isDate{
+            self.isDate = new
+        }
+        if let new = container.startDate {
+            self.startDate = new
+        }
+        if let new = container.endDate {
+            self.endDate = new
         }
         if let new = container.chapter {
             self.chapter?.append(contentsOf: new)
