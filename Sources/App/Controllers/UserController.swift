@@ -274,8 +274,7 @@ extension UserController {
                     }
                     
                     return (userInfo!.save(on: req).flatMap({ (info) in
-                        return try ResponseJSON<Empty>(status: .ok,
-                                                       message: "요청 성공").encode(for: req)
+                        return try ResponseJSON<UserInfo>(data: info).encode(for: req)
                     }))
                 })
             })
