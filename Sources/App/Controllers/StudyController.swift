@@ -163,7 +163,7 @@ extension StudyController {
                                   endDate: container.endDate ?? "",
                                   chapter: container.chapter ?? [],
                                   chiefUser: container.chiefUser,
-                                  studyUser: container.studyUser,
+                                  studyUser: container.studyUser ?? [StudyUser].init(arrayLiteral: container.chiefUser!),
                                   wantUser: container.wantUser ?? [],
                                   fine: container.fine ?? Fine.init(id: nil,
                                                                     attendance: 0,
