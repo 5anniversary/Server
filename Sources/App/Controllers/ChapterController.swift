@@ -44,6 +44,7 @@ extension ChapterController {
                     let chapter: Chapter?
                     
                     chapter = Chapter(id: nil,
+                                      title: container.title ?? "",
                                       studyID: container.studyID ?? 0,
                                       content: container.content ?? "",
                                       date: container.date ?? "",
@@ -82,6 +83,7 @@ extension ChapterController {
                 guard existToken != nil else {
                     return try ResponseJSON<Empty>(status: .token).encode(for: req)
                 }
+                
                 
                 return Chapter
                     .query(on: req)
@@ -143,6 +145,7 @@ extension ChapterController {
                     let chapter: Chapter?
                     
                     chapter = Chapter(id: nil,
+                                      title: container.title ?? "",
                                       studyID: container.studyID ?? 0,
                                       content: container.content ?? "",
                                       date: container.date ?? "",
@@ -179,6 +182,7 @@ struct ChapterInfoContainer: Content {
     
     var id: Int?
     var studyID: Int?
+    var title: String?
     var number: Int?
     var content: String?
     var date: String?
