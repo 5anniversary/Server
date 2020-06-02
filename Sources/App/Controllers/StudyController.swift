@@ -437,7 +437,7 @@ extension StudyController {
         }
         
         guard let token = req.query[String.self, at: "token"] else {
-            throw Abort(.badRequest, reason: "Missing search term in request")
+            throw Abort(.badRequest, reason: "Missing token in request")
         }
         
         let bearToken = BearerAuthorization(token: token)
