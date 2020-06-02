@@ -45,14 +45,15 @@ final class StudyController: RouteCollection {
         group.post(UserInfoContainer.self,
                    at:"cancellike",
                    use: removeLikeStudyHandler)
-
+        
         group.get("search",
                   use: searchHandler)
         
         group.delete("delete", use: deleteHandler)
         
         group.get("getinfo", use: allStudyListHandler)
-        
+        group.get("mystudy", use: getStudyingHandler)
+
     }
     
 }
@@ -189,7 +190,13 @@ extension StudyController {
                                             studyID: info.id,
                                             userID: container.chiefUser?.userID,
                                             category: info.category,
-                                            isEnd: 0)
+                                            isEnd: 0,
+                                            userLimit: info.userLimit,
+                                            image: info.image,
+                                            content: info.content,
+                                            location: info.location,
+                                            isFine: info.isFine
+                        )
                         
                         studying!.save(on: req)
                         
@@ -204,7 +211,7 @@ extension StudyController {
     }
     
     // MARK: - 스터디 수정 API
-
+    
     func updateStudyHandler(_ req: Request, container: StudyInfoContainer) throws -> Future<Response> {
         let bearToken = BearerAuthorization(token: container.token)
         return AccessToken
@@ -340,7 +347,13 @@ extension StudyController {
                                             studyID: info.id,
                                             userID: container.studyUser?[0].userID,
                                             category: existInfo?.category,
-                                            isEnd: 0)
+                                            isEnd: 0,
+                                            userLimit: info.userLimit,
+                                            image: info.image,
+                                            content: info.content,
+                                            location: info.location,
+                                            isFine: info.isFine
+                        )
                         
                         studying?.save(on: req)
                         
@@ -396,7 +409,13 @@ extension StudyController {
                                             studyID: info.id,
                                             userID: container.studyUser?[0].userID,
                                             category: existInfo?.category,
-                                            isEnd: 0)
+                                            isEnd: 0,
+                                            userLimit: info.userLimit,
+                                            image: info.image,
+                                            content: info.content,
+                                            location: info.location,
+                                            isFine: info.isFine
+                        )
                         
                         studying?.save(on: req)
                         
@@ -502,7 +521,7 @@ extension StudyController {
                 })
             })
     }
- 
+    
     func addLikeStudyHandler(_ req: Request,container: UserInfoContainer) throws -> Future<Response> {
         
         let bearToken = BearerAuthorization(token: container.token)
@@ -510,31 +529,31 @@ extension StudyController {
             .authenticate(using: bearToken, on: req)
             .flatMap({ (existToken) in
                 guard let existToken = existToken else {
-                return try ResponseJSON<Empty>(status: .token).encode(for: req)
-            }
-            
-            let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
-                
-            return futureFirst.flatMap({ (existInfo) in
-                let userInfo: UserInfo?
-                
-                if var existInfo = existInfo {
-                    
-                    userInfo = existInfo.addLikeStudy(with: container)
-                    
-                } else {
-                    return try ResponseJSON<Empty>(status: .error,
-                        message: "서버에서 해당 요청에 대한 처리를 하지 못했습니다.").encode(for: req)
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
                 }
                 
-                return (userInfo!.save(on: req).flatMap({ (info) in
-                    return try ResponseJSON<Empty>(status: .ok,
-                                                   message: "요청 성공").encode(for: req)
-                }))
+                let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    let userInfo: UserInfo?
+                    
+                    if var existInfo = existInfo {
+                        
+                        userInfo = existInfo.addLikeStudy(with: container)
+                        
+                    } else {
+                        return try ResponseJSON<Empty>(status: .error,
+                                                       message: "서버에서 해당 요청에 대한 처리를 하지 못했습니다.").encode(for: req)
+                    }
+                    
+                    return (userInfo!.save(on: req).flatMap({ (info) in
+                        return try ResponseJSON<Empty>(status: .ok,
+                                                       message: "요청 성공").encode(for: req)
+                    }))
+                })
             })
-        })
     }
-
+    
     
     func removeLikeStudyHandler(_ req: Request,container: UserInfoContainer) throws -> Future<Response> {
         
@@ -543,30 +562,55 @@ extension StudyController {
             .authenticate(using: bearToken, on: req)
             .flatMap({ (existToken) in
                 guard let existToken = existToken else {
-                return try ResponseJSON<Empty>(status: .token).encode(for: req)
-            }
-            
-            let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
-                
-            return futureFirst.flatMap({ (existInfo) in
-                let userInfo: UserInfo?
-                
-                if var existInfo = existInfo {
-                    userInfo = existInfo.removeLikeStudy(with: container)
-                    
-                } else {
-                    return try ResponseJSON<Empty>(status: .error,
-                        message: "서버에서 해당 요청에 대한 처리를 하지 못했습니다.").encode(for: req)
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
                 }
                 
-                return (userInfo!.save(on: req).flatMap({ (info) in
-                    return try ResponseJSON<Empty>(status: .ok,
-                                                   message: "요청 성공").encode(for: req)
-                }))
+                let futureFirst = UserInfo.query(on: req).filter(\.userID == existToken.userID).first()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    let userInfo: UserInfo?
+                    
+                    if var existInfo = existInfo {
+                        userInfo = existInfo.removeLikeStudy(with: container)
+                        
+                    } else {
+                        return try ResponseJSON<Empty>(status: .error,
+                                                       message: "서버에서 해당 요청에 대한 처리를 하지 못했습니다.").encode(for: req)
+                    }
+                    
+                    return (userInfo!.save(on: req).flatMap({ (info) in
+                        return try ResponseJSON<Empty>(status: .ok,
+                                                       message: "요청 성공").encode(for: req)
+                    }))
+                })
             })
-        })
+    }
+    
+    func getStudyingHandler(_ req: Request) throws -> Future<Response> {
+        let token = try req.query.get(String.self, at: "token")
+        let userID = try req.query.get(String.self, at: "userID")
+        
+        let bearToken = BearerAuthorization(token: token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = Studying
+                    .query(on: req)
+                    .filter(\.userID == userID)
+                    .sort(\.id, .descending)
+                    .all()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    return try ResponseJSON<[Studying]>(data: existInfo).encode(for: req)
+                })
+            })
     }
 
+    
     
 }
 
@@ -594,3 +638,4 @@ struct StudyInfoContainer: Content {
     
     var deleteUserIndex: Int?
 }
+
