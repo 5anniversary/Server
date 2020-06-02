@@ -7,7 +7,7 @@ struct Studying: BaseSQLModel {
     var studyID: Int?
     var userID: String?
     var category: String?
-    var isEnd: Int?
+    var isEnd: Bool?
     var userLimit: Int?
     var image: String?
     var content: String?
