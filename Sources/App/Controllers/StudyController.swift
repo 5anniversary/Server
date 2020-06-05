@@ -46,6 +46,10 @@ final class StudyController: RouteCollection {
                    at:"cancellike",
                    use: removeLikeStudyHandler)
         
+        group.post(StudyInfoContainer.self,
+                   at:"end",
+                   use: endStudyHandler)
+
         group.get("search",
                   use: searchHandler)
         
@@ -386,50 +390,30 @@ extension StudyController {
                     var existInfo = existInfo
                     
                     if existInfo?.id == container.id {
-                        study = existInfo?.moveWantToStudy(with: container)
+                        existInfo?.isEnd = true
+                        study = existInfo
                     } else {
                         return try ResponseJSON<Empty>(status: .error).encode(for: req)
                     }
                     
+                    var studyID: String?
+                    let id:Int! = container.id
+                    studyID = String.init(describing: id!)
+
+                    _ = req.withPooledConnection(to: .mysql) { (conn) -> Future<[Studying]> in
+                        conn.raw("update Studying set isEnd = true where studyID = " + "\(studyID!)").all(decoding:Studying.self)
+                    }
+                    
                     return (study?.save(on: req).flatMap({ (info) in
-                        let studyUser: StudyUser?
-                        let studying: Studying?
-                        
-                        studyUser = StudyUser(id: nil,
-                                              studyID: info.id,
-                                              name: container.studyUser?[0].name ?? "",
-                                              userID: container.studyUser?[0].userID ?? "",
-                                              image: container.studyUser?[0].image ?? "",
-                                              attendance: 0,
-                                              tardy: 0,
-                                              assignment: 0)
-                        
-                        studying = Studying(id: nil,
-                                            name: info.name,
-                                            studyID: info.id,
-                                            userID: container.studyUser?[0].userID,
-                                            category: existInfo?.category,
-                                            isEnd: false,
-                                            userLimit: info.userLimit,
-                                            image: info.image,
-                                            content: info.content,
-                                            location: info.location,
-                                            isFine: info.isFine
-                        )
-                        
-                        studying?.save(on: req)
-                        
-                        return (studyUser?.save(on: req).flatMap({ (info) in
                             return try ResponseJSON<Empty>(status: .ok,
                                                            message: "요청 성공").encode(for: req)
-                        }))!
                     }))!
                 })
             })
         
     }
     
-    // MARK: - 스터디 검색 API : Todo
+    // MARK: - 스터디 검색 API
     
     func searchHandler(_ req: Request) throws -> Future<Response> {
         guard let name = req.query[String.self, at: "name"] else {
@@ -609,6 +593,7 @@ extension StudyController {
                 })
             })
     }
+    
 
     
     
