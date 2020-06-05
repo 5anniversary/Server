@@ -18,6 +18,10 @@ final class ChapterController: RouteCollection {
         group.post(ChapterInfoContainer.self,
                    at:"chapter",
                    use: getChapterHandler)
+        
+        group.post(ChapterInfoContainer.self,
+                   at:"update",
+                   use: updateHandler)
 
         
     }
@@ -171,6 +175,38 @@ extension ChapterController {
                     }))
                 })
             })
+    }
+
+    
+    func updateHandler(_ req: Request, container: ChapterInfoContainer) throws -> Future<Response> {
+        let bearToken = BearerAuthorization(token: container.token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = Chapter.query(on: req).filter(\.id == container.id).first()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    let chapter: Chapter?
+                    var existInfo = existInfo
+                    
+                    if existInfo?.id == container.id {
+                        chapter = existInfo?.update(with: container)
+                    } else {
+                        return try ResponseJSON<Empty>(status: .error).encode(for: req)
+                    }
+                    
+                    return (chapter?.save(on: req).flatMap({ result in
+                        return try ResponseJSON<Empty>(status: .ok,
+                                                       message: "요청 성공").encode(for: req)
+                        
+                    }))!
+                })
+        })
     }
 
     
