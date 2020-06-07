@@ -40,6 +40,7 @@ public func configure(_ config: inout Config,
     middlewares.use(ErrorMiddleware.self)
     middlewares.use(FileMiddleware.self)
     
+    
     middlewares.use(GuardianMiddleware(rate: Rate(limit: 10000,
                                                   interval: .minute),
                                        closure: { (req) -> EventLoopFuture<Response>? in
