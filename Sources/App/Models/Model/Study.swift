@@ -86,6 +86,13 @@ extension Study {
         return self
     }
     
+    mutating func endStudy(with container: StudyInfoContainer) -> Study {
+        
+        self.isEnd = true
+
+        return self
+    }
+    
     mutating func updateWantUser(with container: StudyInfoContainer) -> Study {
         if let new = container.wantUser {
             self.wantUser?.append(contentsOf: new)

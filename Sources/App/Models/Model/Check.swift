@@ -16,6 +16,21 @@ struct Check: BaseSQLModel {
 
 extension Check {
     typealias Database = MySQLDatabase
+    
+    mutating func update(with container: CheckInfoContainer) -> Check {
+        if let new = container.assignment{
+            self.assignment?.append(contentsOf: new)
+        }
+        if let new = container.tardy{
+            self.tardy?.append(contentsOf: new)
+        }
+        if let new = container.attendance{
+            self.attendance?.append(contentsOf: new)
+        }
+
+        
+        return self
+    }
 }
 
 struct IsCheck: BaseSQLModel {
