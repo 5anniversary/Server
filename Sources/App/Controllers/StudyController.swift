@@ -434,7 +434,7 @@ extension StudyController {
                 }
                 
                 let result = req.withPooledConnection(to: .mysql) { conn -> Future<[Study]> in
-                    conn.raw("Select * from Study where name like '%" + name + "%'" ).all(decoding: Study.self)
+                    conn.raw("Select * from j82tawrs7p22ynqg.Study where name like '%" + name + "%'" ).all(decoding: Study.self)
                 }
                 
                 return result.flatMap({ (result) in
