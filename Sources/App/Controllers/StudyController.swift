@@ -588,6 +588,7 @@ extension StudyController {
                     .sort(\.id, .descending)
                     .all()
                 
+                
                 return futureFirst.flatMap({ (existInfo) in
                     return try ResponseJSON<[Studying]>(data: existInfo).encode(for: req)
                 })
