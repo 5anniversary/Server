@@ -401,7 +401,7 @@ extension StudyController {
                     studyID = String.init(describing: id!)
 
                     _ = req.withPooledConnection(to: .mysql) { (conn) -> Future<[Studying]> in
-                        conn.raw("update Studying set isEnd = true where studyID = " + "\(studyID!)").all(decoding:Studying.self)
+                        conn.raw("update j82tawrs7p22ynqg.Studying set isEnd = true where studyID = " + "\(studyID!)").all(decoding:Studying.self)
                     }
                     
                     return (study?.save(on: req).flatMap({ (info) in
