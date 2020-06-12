@@ -399,7 +399,7 @@ extension StudyController {
                     var studyID: String?
                     let id:Int! = container.id
                     studyID = String.init(describing: id!)
-
+                    
                     _ = req.withPooledConnection(to: .mysql) { (conn) -> Future<[Studying]> in
                         conn.raw("update j82tawrs7p22ynqg.Studying set isEnd = true where studyID = " + "\(studyID!)").all(decoding:Studying.self)
                     }
@@ -437,8 +437,13 @@ extension StudyController {
                     conn.raw("Select * from j82tawrs7p22ynqg.Study where name like '%" + name + "%'" ).all(decoding: Study.self)
                 }
                 
-                return result.flatMap({ (result) in
-                    return try ResponseJSON<[Study]>(data: result).encode(for: req)
+                return result.flatMap({ (studies) in
+                    let study = studies.compactMap({ stu -> Study in
+                        var stu = stu; stu.chapter = nil; stu.chiefUser = nil; stu.studyUser = nil
+                        stu.wantUser = nil; stu.fine = nil;
+                        return stu
+                    })
+                    return try ResponseJSON<[Study]>(data: study).encode(for: req)
                 })
             })
     }
@@ -587,7 +592,6 @@ extension StudyController {
                     .filter(\.userID == userID)
                     .sort(\.id, .descending)
                     .all()
-                
                 
                 return futureFirst.flatMap({ (existInfo) in
                     return try ResponseJSON<[Studying]>(data: existInfo).encode(for: req)
