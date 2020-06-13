@@ -41,6 +41,10 @@ extension UserInfo {
         if let new = container.category {
             self.userCategory = new
         }
+        if let new = container.content {
+            self.content = new
+        }
+
         
         return self
     }
