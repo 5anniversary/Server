@@ -53,7 +53,7 @@ final class StudyController: RouteCollection {
         group.get("search",
                   use: searchHandler)
         
-        group.get("studyuser",
+        group.get("fine",
                   use: getStudyUserHandler)
 
         group.delete("delete", use: deleteHandler)
