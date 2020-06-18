@@ -26,6 +26,9 @@ final class ChapterController: RouteCollection {
         group.post(CheckInfoContainer.self,
                    at:"check",
                    use: checkHandler)
+        
+        group.get("check",
+                   use: getCheckHandler)
 
         group.delete("delete",
                      use: deleteHandler)
@@ -236,6 +239,37 @@ extension ChapterController {
                 })
             })
     }
+    
+    func getCheckHandler(_ req: Request) throws -> Future<Response> {
+        let token = try req.query.get(String.self, at: "token")
+        let studyID = try req.query.get(Int.self, at: "studyID")
+        let chapterID = try req.query.get(Int.self, at: "chapterID")
+        
+        let bearToken = BearerAuthorization(token: token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                return Check
+                    .query(on: req)
+                    .filter(\.studyID == studyID)
+                    .filter(\.chapterID == chapterID)
+                    .all()
+                    .flatMap({ (result) in
+                        let result = result.compactMap({ res -> Check in
+                            var check = res; check.id = nil
+                            check.createdAt = nil;
+                            return check
+                        })
+                        return try ResponseJSON<[Check]>(data: result).encode(for: req)
+                    })
+            })
+    }
+
     
     func checkHandler(_ req: Request, container: CheckInfoContainer) throws -> Future<Response>{
         let bearToken = BearerAuthorization(token: container.token)
