@@ -53,6 +53,9 @@ final class StudyController: RouteCollection {
         group.get("search",
                   use: searchHandler)
         
+        group.get("studyuser",
+                  use: getStudyUserHandler)
+
         group.delete("delete", use: deleteHandler)
         
         group.get("getinfo", use: allStudyListHandler)
@@ -599,6 +602,30 @@ extension StudyController {
             })
     }
     
+    func getStudyUserHandler(_ req: Request) throws -> Future<Response> {
+        let token = try req.query.get(String.self, at: "token")
+        let studyID = try req.query.get(Int.self, at: "studyID")
+        
+        let bearToken = BearerAuthorization(token: token)
+        return AccessToken
+            .authenticate(using: bearToken, on: req)
+            .flatMap({ (existToken) in
+                guard existToken != nil else {
+                    return try ResponseJSON<Empty>(status: .token).encode(for: req)
+                }
+                
+                let futureFirst = StudyUser
+                    .query(on: req)
+                    .filter(\.studyID == studyID)
+                    .sort(\.id, .ascending)
+                    .all()
+                
+                return futureFirst.flatMap({ (existInfo) in
+                    return try ResponseJSON<[StudyUser]>(data: existInfo).encode(for: req)
+                })
+            })
+    }
+
 
     
     
