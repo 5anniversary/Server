@@ -37,5 +37,5 @@ struct IsCheck: BaseSQLModel {
     var id: Int?
     
     var name: String
-    var isCheck: Int
+    var isCheck: Bool
 }
